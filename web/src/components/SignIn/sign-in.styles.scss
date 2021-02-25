@@ -1,16 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
 .sign-in {
   margin-top: 30vh;
 }
 
 .intro {
-  padding-left: 30px;
-  padding-right: 30px;
+  font-family: 'Open Sans', sans-serif;
+  padding-left: 50px;
+  padding-right: 50px;
   margin-top: 20vh;
   text-align: center;
 
   .content {
     width: 35vw;
     font-size: 20px;
-    margin-left: 4vw;
   }
 }
