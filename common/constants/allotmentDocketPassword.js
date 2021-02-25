@@ -1,0 +1,1 @@
+export const ALLOTMENT_DOCKET_PASSWORD = 'YNTMR'
