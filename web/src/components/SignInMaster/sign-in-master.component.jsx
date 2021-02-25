@@ -9,7 +9,7 @@ import './sign-in-master.styles.scss';
 const SignInMaster = () => (
   <div className='signInMaster'>
     <div className='logo'>
-      <img src='home-logo.png' alt='logoimg' style={{ zIndex: '5' }} />
+      <img src='home-logo.png' alt='logoimg' style={{ zIndex: '5',height:'60px',width:'auto' }} />
     </div>
     <img
       src='back3.jpg'
