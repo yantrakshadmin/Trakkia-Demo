@@ -48,7 +48,7 @@ const ScreenWrapper = ({routes, navigate, children, user, changePage}) => {
               width: 'auto',
               position: 'absolute',
             }}
-            alt="Yantraksh"
+            alt="Trakkia"
             src={logo}
           />
         </div>
@@ -126,8 +126,8 @@ const ScreenWrapper = ({routes, navigate, children, user, changePage}) => {
           </Suspense>
           <Footer className="row justify-end ">
             <span>
-              <a target="_blank" rel="noopener noreferrer" href="https://yantraksh.com">
-                Yantraksh Logistics Pvt. Ltd.
+              <a target="_blank" rel="noopener noreferrer" href="https://yourcompanywebsite.com">
+                {`<Company Name>`}
               </a>{' '}
               &copy; All rights reserved
             </span>

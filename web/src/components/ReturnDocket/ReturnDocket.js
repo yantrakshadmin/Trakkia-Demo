@@ -98,7 +98,7 @@ const ReturnDocket = ({location, isClient}) => {
       <div className="container-docket">
         <div className="header-docket">
           <div className="logo-docket">
-            <img src={`${process.env.PUBLIC_URL}/home-logo.png`} alt="Yantraksh" />
+            <img src={`${process.env.PUBLIC_URL}/home-logo.png`} alt="Trakkia" />
           </div>
           <div className="heading-docket">
             <Title level={2} style={{fontWeight: 'bold'}}>
@@ -349,10 +349,11 @@ const ReturnDocket = ({location, isClient}) => {
           <div className="declaration">
             <p style={{fontWeight: 'bold', display: 'inline'}}>Declaration : </p>
             <p style={{display: 'inline'}}>
-              The packaging products given on hire shall always remain the property of Yantraksh
+              The packaging products given on hire shall always remain the property of{' '}
+              {`<Company Name>`}
               Logistics Private Limited and shall not be used for the purpose otherwise agreed upon.
-              The same shall be returned at the address notified by Yantraksh Logistics Private
-              Limited.
+              The same shall be returned at the address notified by {`<Company Name>`} Logistics
+              Private Limited.
             </p>
             <br />
             <p style={{fontWeight: 'bold', display: 'inline'}}>Note : </p>
@@ -404,10 +405,8 @@ const ReturnDocket = ({location, isClient}) => {
                 padding: '0',
                 margin: '0',
               }}>
-              <p style={{fontSize: '26px', color: '#034efc'}}>
-                Yantraksh Logistics Private Limited
-              </p>
-              <p>CIN No: U74999GJ2018PTC105552</p>
+              <p style={{fontSize: '26px', color: '#034efc'}}>{`<Company Name>`}</p>
+              <p>CIN No: ##########</p>
             </div>
           </div>
         </table>
