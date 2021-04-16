@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {Popconfirm, Tag, Button, Input, Modal} from 'antd';
+import {PlusCircleOutlined, MinusCircleOutlined} from '@ant-design/icons';
 import {connect, useDispatch} from 'react-redux';
 import {useTableSearch} from 'hooks/useTableSearch';
-import {retrievePFEP, deletePFEP, tpFileUpload} from 'common/api/auth';
+import {retrievePFEP, deletePFEP, tpFileUpload, tpFileReUpload} from 'common/api/auth';
 import Delete from 'icons/Delete';
 import {PFEPColumn} from 'common/columns/PFEP.column';
 import {utcDateFormatter} from 'common/helpers/dateFomatter';
@@ -15,19 +16,55 @@ import {PFEPMainForm} from '../../forms/PFEP/PFEPMain.form';
 import {ActionsPopover} from '../../components/ActionsPopover';
 import {MainCreateCPForm} from '../../forms/CreateCP/mainCreateCP.form';
 import {UploadLeadForm} from '../../forms/uploadLead.form';
+import moment from 'moment';
+import {loadAPI} from 'common/helpers/api';
+import {DEFAULT_BASE_URL} from 'common/constants/enviroment';
+
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
+
+import {GetUniqueValue} from 'common/helpers/getUniqueValues';
+import {ifNotStrReturnA} from 'common/helpers/mrHelper';
+import FilesViewModal from '../../components/FilesViewModal';
+import NoPermissionAlert from 'components/NoPermissionAlert';
 
 const {Search} = Input;
+
+const HideShowTag = ({children}) => {
+  const [show, setShow] = useState(false);
+
+  const handClick = useCallback(
+    (ev) => {
+      setShow(!show);
+    },
+    [show, setShow],
+  );
+
+  return (
+    <div className="column">
+      <Tag
+        style={{cursor: 'pointer'}}
+        icon={show ? <MinusCircleOutlined /> : <PlusCircleOutlined />}
+        color="processing"
+        onClick={handClick}>
+        {show ? 'Hide' : 'Show'}
+      </Tag>
+      {show ? children : null}
+    </div>
+  );
+};
 
 const PFEPEmployeeScreen = ({currentPage}) => {
   const [searchVal, setSearchVal] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [lead, setLead] = useState(null);
+  const [isReUpload, setIsReUpload] = useState(false);
   const [csvData, setCsvData] = useState(null);
   const [createCPVisible, setCreateCPVisible] = useState(false);
   const [uploadTPVisible, setUploadTP] = useState(false);
   const dispatch = useDispatch();
 
-  const {filteredData, loading, reload} = useTableSearch({
+  const {filteredData, loading, reload, hasPermission} = useTableSearch({
     searchVal,
     retrieve: retrievePFEP,
   });
@@ -49,6 +86,8 @@ const PFEPEmployeeScreen = ({currentPage}) => {
       key: 'date',
       dataIndex: 'date',
       width: '7vw',
+      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
+      showSorterTooltip: false,
       render: (text) => <div>{utcDateFormatter(text)}</div>,
     },
     {
@@ -56,6 +95,11 @@ const PFEPEmployeeScreen = ({currentPage}) => {
       key: 'emitter',
       width: '5vw',
       render: (record) => (record.sender_client ? record.sender_client : '-'),
+      // sorter: (a, b) =>
+      //   ifNotStrReturnA(a.sender_client).localeCompare(ifNotStrReturnA(b.sender_client)),
+      // showSorterTooltip: false,
+      filters: GetUniqueValue(filteredData || [], 'sender_client'),
+      onFilter: (value, record) => record.sender_client === value,
     },
     {
       title: 'Receiver',
@@ -69,6 +113,11 @@ const PFEPEmployeeScreen = ({currentPage}) => {
         }
         return '-';
       },
+      sorter: (a, b) =>
+        ifNotStrReturnA(a.receivers[0]['name']).localeCompare(
+          ifNotStrReturnA(b.receivers[0]['name']),
+        ),
+      showSorterTooltip: false,
     },
     {
       title: 'Contact Person',
@@ -83,13 +132,16 @@ const PFEPEmployeeScreen = ({currentPage}) => {
           {record.email}
         </div>
       ),
+      sorter: (a, b) =>
+        ifNotStrReturnA(a.contact_person).localeCompare(ifNotStrReturnA(b.contact_person)),
+      showSorterTooltip: false,
     },
     {
       title: 'Solution Required',
       key: 'solution_required',
       width: '12vw',
       render: (record) => (
-        <div className="column">
+        <HideShowTag>
           {record.solution_flc ? <Tag>FLC</Tag> : null}
           {record.solution_fsc ? <Tag>FSC</Tag> : null}
           {record.solution_crate ? <Tag>Crate</Tag> : null}
@@ -99,7 +151,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
           {record.solution_pp ? <Tag>Solution PP</Tag> : null}
           {record.solution_stacking_nesting ? <Tag>Solution Stacking Nesting</Tag> : null}
           {record.solution_wp ? <Tag>Solution WP</Tag> : null}
-        </div>
+        </HideShowTag>
       ),
     },
     {
@@ -107,7 +159,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
       key: 'status',
       width: '8vw',
       render: (record) => (
-        <div className="column">
+        <HideShowTag>
           {record.tp_shared ? <Tag>TP shared</Tag> : null}
           {record.cp_shared ? <Tag>CP shared</Tag> : null}
           {record.tp_approved ? <Tag>TP Approved</Tag> : null}
@@ -120,16 +172,52 @@ const PFEPEmployeeScreen = ({currentPage}) => {
           {record.pfep_dropped ? <Tag>PFEP Dropped</Tag> : null}
           {record.not_qualified ? <Tag>Not Qualified</Tag> : null}
           {record.solution_remark ? <Tag>Solution Remark</Tag> : null}
-        </div>
+        </HideShowTag>
       ),
     },
     {
       title: 'Action',
       key: 'operation',
       fixed: 'right',
-      width: '8vw',
+      width: '12vw',
       render: (text, record) => (
         <div className="row align-center justify-evenly">
+          <FilesViewModal
+            documentAvail={record.file_uploaded ? true : false}
+            getDocuments={async () => {
+              const {data: req} = await loadAPI(`${DEFAULT_BASE_URL}/tp-file/?id=${record.id}`, {});
+              if (req) {
+                if (req[0]) {
+                  if (req[0].document) {
+                    return [{document: req[0].document, span: 20}];
+                  }
+                }
+              }
+            }}
+          />
+          {/* <Button
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              boxShadow: 'none',
+              padding: '1px',
+            }}
+            onClick={async (e) => {
+              const {data: req} = await loadAPI(`${DEFAULT_BASE_URL}/tp-file/?id=${record.id}`, {});
+              if (req) {
+                if (req[0]) {
+                  if (req[0].document) {
+                    window.open(req[0].document);
+                  }
+                }
+              }
+              e.stopPropagation();
+            }}>
+            <FontAwesomeIcon
+              icon={record.file_uploaded ? faEye : faEyeSlash}
+              style={{fontSize: 20, color: '#20a8d8'}}
+            />
+          </Button> */}
           <ActionsPopover
             // popover={popover}
             // setPopover={setPopover}
@@ -166,10 +254,12 @@ const PFEPEmployeeScreen = ({currentPage}) => {
               },
               {
                 Icon: ToTopOutlined,
-                title: 'Upload TP',
+                title: record.file_uploaded ? 'Re-Upload TP' : 'Upload TP',
                 onClick: (e) => {
                   // setPopover(false);
                   setUploadTP(true);
+                  setLead(record.id);
+                  setIsReUpload(!!record.file_uploaded);
                   e.stopPropagation();
                 },
               },
@@ -184,7 +274,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
             }}
             onClick={(e) => {
               setEditingId(record.id);
-              setLead(record.lead_no);
+              setLead(record.id);
               dispatch({type: ADD_PFEP_DATA, data: record});
               e.stopPropagation();
             }}>
@@ -233,7 +323,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
     setCreateCPVisible(false);
   };
   return (
-    <>
+    <NoPermissionAlert hasPermission={hasPermission}>
       <div style={{display: 'flex', justifyContent: 'flex-end'}}>
         <div style={{width: '15vw', display: 'flex', alignItems: 'flex-end'}}>
           <Search onChange={(e) => setSearchVal(e.target.value)} placeholder="Search" enterButton />
@@ -273,9 +363,13 @@ const PFEPEmployeeScreen = ({currentPage}) => {
           }}
           onDone={() => {
             setUploadTP(false);
+            reload();
           }}
           lead={lead}
+          isReUpload={isReUpload}
+          recreate={tpFileReUpload}
           create={tpFileUpload}
+          varName="pfep"
         />
       </Modal>
       <TableWithTabHOC
@@ -303,7 +397,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
         csvdata={csvData}
         csvname={`PFEP${searchVal}.csv`}
       />
-    </>
+    </NoPermissionAlert>
   );
 };
 

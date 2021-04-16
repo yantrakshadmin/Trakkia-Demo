@@ -31,6 +31,10 @@ import {LineGraph} from '../../components/graphComponent/lineGraph';
 import {yantraColors} from '../../helpers/yantraColors';
 import ExpandTable from '../../components/ReturnsExpandTable';
 
+import DeleteWithPassword from '../../components/DeleteWithPassword';
+import {DEFAULT_PASSWORD} from 'common/constants/passwords';
+import NoPermissionAlert from 'components/NoPermissionAlert';
+
 const {Search} = Input;
 
 const ReturnDocketsScreen = ({currentPage}) => {
@@ -43,7 +47,7 @@ const ReturnDocketsScreen = ({currentPage}) => {
   const [TN, setTN] = useState(null);
   const navigate = useNavigate();
 
-  const {data: returns, loading} = useAPI('/return-table/', {});
+  const {data: returns, loading, reload: reloadFull, status} = useAPI('/return-table/', {});
 
   const {filteredData, reload} = useTableSearch({
     searchVal,
@@ -118,7 +122,7 @@ const ReturnDocketsScreen = ({currentPage}) => {
               }}
               // disabled={!record.document}
               onClick={async (e) => {
-                console.log(record, 'record');
+                e.stopPropagation();
                 const {data: req} = await loadAPI(
                   `${DEFAULT_BASE_URL}/received-docket/?pk=${record.id}`,
                   {},
@@ -126,9 +130,14 @@ const ReturnDocketsScreen = ({currentPage}) => {
                 if (req)
                   if (req.document) {
                     window.open(req.document);
-                    // navigate(req.document)
                   }
-                e.stopPropagation();
+                try {
+                  if (req.pod.length > 0) {
+                    req.pod.forEach((f) => {
+                      window.open(f.document);
+                    });
+                  }
+                } catch (err) {}
               }}>
               <FontAwesomeIcon
                 icon={record.is_delivered ? faEye : faEyeSlash}
@@ -146,7 +155,8 @@ const ReturnDocketsScreen = ({currentPage}) => {
             onClick={(e) => {
               setDeliveryId(record.id);
               e.stopPropagation();
-            }}>
+            }}
+            disabled={record.is_delivered ? true : false}>
             <Delivery color={record.is_delivered ? '#7CFC00' : null} />
           </Button>
           <Button
@@ -168,7 +178,7 @@ const ReturnDocketsScreen = ({currentPage}) => {
             }}>
             <Edit />
           </Button>
-          <Popconfirm
+          {/* <Popconfirm
             title="Confirm Delete"
             onCancel={(e) => e.stopPropagation()}
             onConfirm={deleteHOC({
@@ -188,7 +198,17 @@ const ReturnDocketsScreen = ({currentPage}) => {
               onClick={(e) => e.stopPropagation()}>
               <Delete />
             </Button>
-          </Popconfirm>
+          </Popconfirm> */}
+          <DeleteWithPassword
+            password={DEFAULT_PASSWORD}
+            deleteHOC={deleteHOC({
+              record,
+              reloadFull,
+              api: deleteReturn,
+              success: 'Deleted Return successfully',
+              failure: 'Error in deleting Return',
+            })}
+          />
         </div>
       ),
     },
@@ -211,7 +231,7 @@ const ReturnDocketsScreen = ({currentPage}) => {
 
   const handleDone = () => {
     cancelEditing();
-    reload();
+    reloadFull();
   };
 
   let deliveredCount = 0;
@@ -222,7 +242,7 @@ const ReturnDocketsScreen = ({currentPage}) => {
   const pendingCount = (reqData || []).length - deliveredCount;
 
   return (
-    <>
+    <NoPermissionAlert hasPermission={status === 403 ? false : true}>
       <Row className="mr-auto ml-auto" gutter={24}>
         <Col span={6}>
           <LineGraph {...{tagName: 'Total Return', count: (reqData || []).length, width: 230}} />
@@ -265,7 +285,7 @@ const ReturnDocketsScreen = ({currentPage}) => {
       </Modal>
       <TableWithTabHOC
         rowKey={(record) => record.id}
-        refresh={reload}
+        refresh={reloadFull}
         tabs={tabs}
         size="middle"
         title="Return Dockets"
@@ -277,7 +297,7 @@ const ReturnDocketsScreen = ({currentPage}) => {
         editingId={editingId || deliveryId}
         cancelEditing={cancelEditing}
       />
-    </>
+    </NoPermissionAlert>
   );
 };
 

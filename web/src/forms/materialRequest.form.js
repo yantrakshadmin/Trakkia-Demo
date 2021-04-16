@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {Form, Col, Row, Button, Divider, Spin} from 'antd';
 import {
   materialRequestFormFields,
@@ -16,9 +16,32 @@ import {filterActive} from 'common/helpers/mrHelper';
 
 export const MaterialRequestForm = ({id, onCancel, onDone, isEmployee}) => {
   const [flowId, setFlowId] = useState(null);
+  const [selectedKits, setSelectedKits] = useState([]);
 
-  const {data: flows} = useAPI('/myflows/', {});
-  const {data: kits} = useControlledSelect(flowId);
+  const {data: flows, loading: loadingF} = useAPI('/myflows/', {});
+  //const {data: kitsAll} = useAPI('/kits/', {});
+
+  //const {data: kits} = useControlledSelect(flowId);
+
+  useEffect(() => {
+    if (!loadingF && id) {
+      const temp = [];
+      flows.forEach((f) => {
+        f.kits.forEach((k) => {
+          temp.push(k.kit);
+        });
+      });
+      setSelectedKits(_.uniqBy(temp, 'id'));
+    }
+  }, [loadingF]);
+
+  useEffect(() => {
+    if (flowId) {
+      const selectedFlow = _.find(flows, (f) => f.id === flowId);
+      const temp = (selectedFlow.kits || []).map((k) => k.kit);
+      setSelectedKits(temp);
+    }
+  }, [flowId]);
 
   const {form, submit, loading} = useHandleForm({
     create: createMr,
@@ -46,9 +69,42 @@ export const MaterialRequestForm = ({id, onCancel, onDone, isEmployee}) => {
     submit(data);
   };
 
-  const handleFieldsChange = (data) => {
-    console.log(data);
-  };
+  const [disableAdd, setDisableAdd] = useState(false);
+
+  const handleFieldsChange = useCallback(
+    (data) => {
+      if (data[0]) {
+        if (data[0].name[0]) {
+          const flowsList = form.getFieldValue('flows');
+          if (flowsList) {
+            if (flowsList.length > 0) {
+              if (flowsList[flowsList.length - 1]) {
+                if (
+                  'flow' in flowsList[flowsList.length - 1] &&
+                  'kit' in flowsList[flowsList.length - 1] &&
+                  'quantity' in flowsList[flowsList.length - 1]
+                ) {
+                  setDisableAdd(false);
+                } else {
+                  setDisableAdd(true);
+                }
+              } else {
+                if (flowsList.length > 1) {
+                  let flowsX = form.getFieldValue('flows');
+                  flowsX[flowsX.length - 1] = {flow: flowsX[flowsX.length - 2].flow};
+                  setFlowId(flowsX[flowsX.length - 2].flow);
+                  form.setFieldsValue({flows: flowsX});
+                }
+              }
+            } else {
+              setDisableAdd(false);
+            }
+          }
+        }
+      }
+    },
+    [form, disableAdd, setDisableAdd],
+  );
 
   return (
     <Spin spinning={loading}>
@@ -79,7 +135,7 @@ export const MaterialRequestForm = ({id, onCancel, onDone, isEmployee}) => {
                 {fields.map((field, index) => (
                   <Row align="middle">
                     {materialRequestFlowFormFields.slice(0, 1).map((item) => (
-                      <Col span={13}>
+                      <Col span={10}>
                         <div className="p-2">
                           {formItem({
                             ...item,
@@ -98,6 +154,7 @@ export const MaterialRequestForm = ({id, onCancel, onDone, isEmployee}) => {
                               key: 'id',
                               dataKeys: ['flow_name', 'flow_info', 'flow_type'],
                               customTitle: 'flow_name',
+                              searchKeys: ['flow_info'],
                               formOptions: {
                                 ...field,
                                 name: [field.name, item.key],
@@ -109,7 +166,7 @@ export const MaterialRequestForm = ({id, onCancel, onDone, isEmployee}) => {
                       </Col>
                     ))}
                     {materialRequestFlowFormFields.slice(1, 2).map((item) => (
-                      <Col span={4}>
+                      <Col span={7}>
                         <div className="p-2">
                           {formItem({
                             ...item,
@@ -119,19 +176,19 @@ export const MaterialRequestForm = ({id, onCancel, onDone, isEmployee}) => {
                               showSearch: true,
                               filterOption: (input, option) =>
                                 option.search.toLowerCase().indexOf(input.toLowerCase()) >= 0,
-                              onFocus: () => {
-                                const data = form.getFieldValue(['flows', field.name, 'flow']);
-                                if (data) {
-                                  console.log(data);
-                                  setFlowId(data);
-                                }
-                              },
+                              // onFocus: () => {
+                              //   const data = form.getFieldValue(['flows', field.name, 'flow']);
+                              //   if (data) {
+                              //     setFlowId(data);
+                              //   }
+                              // },
                             },
                             others: {
-                              selectOptions: filterActive(_, kits) || [],
+                              selectOptions: filterActive(_, selectedKits) || [],
                               key: 'id',
-                              dataKeys: ['kit_name', 'kit_info', 'components_per_kit'],
-                              customTitle: 'kit_name',
+                              dataKeys: ['kit_name', 'components_per_kit'],
+                              customTitle: 'part_name',
+                              searchKeys: ['kit_name', 'components_per_kit'],
                               formOptions: {
                                 ...field,
                                 name: [field.name, item.key],
@@ -167,7 +224,7 @@ export const MaterialRequestForm = ({id, onCancel, onDone, isEmployee}) => {
                         onClick={() => {
                           remove(field.name);
                         }}>
-                        <MinusCircleOutlined /> Delete
+                        <MinusCircleOutlined />
                       </Button>
                     </Col>
                   </Row>
@@ -177,8 +234,10 @@ export const MaterialRequestForm = ({id, onCancel, onDone, isEmployee}) => {
                     type="dashed"
                     onClick={() => {
                       add();
+                      setDisableAdd(true);
                     }}
-                    block>
+                    block
+                    disabled={disableAdd}>
                     <PlusOutlined /> Add Item
                   </Button>
                 </Form.Item>

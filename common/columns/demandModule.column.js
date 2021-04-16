@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-const getFullName = (fn, ln) => {
+export const getFullName = (fn, ln) => {
   if (fn && ln) {
     return `${fn} ${ln}`;
   }
@@ -20,6 +20,7 @@ export default [
     title: 'ID',
     key: 'id',
     dataIndex: 'id',
+    sorter: (a, b) => a.id - b.id,
   },
   {
     title: 'Month',
@@ -27,7 +28,7 @@ export default [
     sorter: (a, b) => moment(a.delivery_month).unix() - moment(b.delivery_month).unix(),
     showSorterTooltip: false,
     render: (text, record) => {
-      return moment(record.delivery_month).format('MM/YYYY');
+      return moment(record.delivery_month).format('MMMM YYYY');
     },
   },
   {

@@ -15,6 +15,9 @@ import Edit from '../../icons/Edit';
 import TableWithTabHOC from '../../hocs/TableWithTab.hoc';
 import {MainCreateCPForm} from '../../forms/CreateCP/mainCreateCP.form';
 import Document from '../../icons/Document';
+import {ifNotStrReturnA} from 'common/helpers/mrHelper';
+import {GetUniqueValueNested} from 'common/helpers/getUniqueValues';
+import NoPermissionAlert from 'components/NoPermissionAlert';
 
 const {Search} = Input;
 
@@ -26,7 +29,7 @@ const CreateCPScreen = ({currentPage}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {filteredData, loading, reload} = useTableSearch({
+  const {filteredData, loading, reload, hasPermission} = useTableSearch({
     searchVal,
     retrieve: retrieveCP,
   });
@@ -46,21 +49,32 @@ const CreateCPScreen = ({currentPage}) => {
     {
       title: 'Lead No.',
       key: 'lead_no',
+      sorter: (a, b) => a.pfep.lead_no - b.pfep.lead_no,
+      showSorterTooltip: false,
       render: (record) => <div>{record.pfep.lead_no}</div>,
     },
     {
       title: 'PFEP No.',
       key: 'pfep_no',
+      sorter: (a, b) => a.pfep.pfep_no - b.pfep.pfep_no,
+      showSorterTooltip: false,
       render: (record) => <div>{record.pfep.pfep_no}</div>,
     },
     {
       title: 'Emitter',
       key: 'emitter',
       render: (record) => <div>{record.pfep.sender_client}</div>,
+      // sorter: (a, b) =>
+      //   ifNotStrReturnA(a.pfep.sender_client).localeCompare(ifNotStrReturnA(b.pfep.sender_client)),
+      // showSorterTooltip: false,
+      filters: GetUniqueValueNested(filteredData || [], 'pfep', 'sender_client'),
+      onFilter: (value, record) => record.pfep.sender_client === value,
     },
     {
       title: 'Emitter Location',
       key: 'emitter_location',
+      sorter: (a, b) => a.pfep.sender_location.localeCompare(b.pfep.sender_location),
+      showSorterTooltip: false,
       render: (record) => <div>{record.pfep.sender_location}</div>,
     },
     {
@@ -69,6 +83,11 @@ const CreateCPScreen = ({currentPage}) => {
       render: (record) => (
         <div>{record.pfep.receivers.length > 0 ? record.pfep.receivers[0].name : ''}</div>
       ),
+      sorter: (a, b) =>
+        ifNotStrReturnA(a.pfep.receivers[0]['name']).localeCompare(
+          ifNotStrReturnA(b.pfep.receivers[0]['name']),
+        ),
+      showSorterTooltip: false,
     },
     {
       title: 'Receiver Location',
@@ -76,6 +95,11 @@ const CreateCPScreen = ({currentPage}) => {
       render: (record) => (
         <div>{record.pfep.receivers.length > 0 ? record.pfep.receivers[0].location : ''}</div>
       ),
+      sorter: (a, b) =>
+        ifNotStrReturnA(a.pfep.receivers[0]['location']).localeCompare(
+          ifNotStrReturnA(b.pfep.receivers[0]['location']),
+        ),
+      showSorterTooltip: false,
     },
     ...CreateCPColumns,
     {
@@ -202,7 +226,7 @@ const CreateCPScreen = ({currentPage}) => {
     }),
   };
   return (
-    <>
+    <NoPermissionAlert hasPermission={hasPermission}>
       <div style={{display: 'flex', justifyContent: 'flex-end'}}>
         <Button
           className="mx-2"
@@ -253,7 +277,7 @@ const CreateCPScreen = ({currentPage}) => {
         csvdata={csvData}
         csvname={`CP${searchVal}.csv`}
       />
-    </>
+    </NoPermissionAlert>
   );
 };
 

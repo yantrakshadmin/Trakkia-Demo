@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {Row, Col, Typography, Spin} from 'antd';
 import {Table} from 'react-bootstrap';
+import {useAPI} from 'common/hooks/api';
 import moment from 'moment';
+import _ from 'lodash';
 
 import {retrieveReturnDocket, retrieveReturnDocketCaleder} from 'common/api/auth';
 
@@ -15,8 +17,9 @@ const ReturnDocket = ({location, isClient}) => {
   const [total, setTotal] = useState(0);
   const [weight, setWeight] = useState(0);
 
+  const {data: clientKits, loading: ckLoading} = useAPI('/client-kits/', {});
+
   useEffect(() => {
-    console.log(isClient);
     const fetchReturn = async () => {
       if (location.state) {
         console.log(location.state);
@@ -43,7 +46,6 @@ const ReturnDocket = ({location, isClient}) => {
           k.items.map((item) => {
             tot += item.quantity * item.product.priceperunit;
             wt += item.product.volumetric_weight * item.quantity;
-            console.log(item.product);
           });
         });
       }
@@ -98,7 +100,7 @@ const ReturnDocket = ({location, isClient}) => {
       <div className="container-docket">
         <div className="header-docket">
           <div className="logo-docket">
-            <img src={`${process.env.PUBLIC_URL}/home-logo.png`} alt="Trakkia" />
+            <img src={`${process.env.PUBLIC_URL}/home-logo.png`} alt="Yantraksh" />
           </div>
           <div className="heading-docket">
             <Title level={2} style={{fontWeight: 'bold'}}>
@@ -232,40 +234,66 @@ const ReturnDocket = ({location, isClient}) => {
             </thead>
             <tbody>
               {reqReturn.kits.map((kit) => {
-                return (
-                  <tr>
-                    <td>{kit.kit}</td>
-                    <td>{kit.quantity}</td>
-                    {/* <td>
-                      {kit.items.map((prod) => (
-                        <div style={{display: 'flex', flexDirection: 'column'}}>
-                          <p>{prod.product.hsn_code}</p>
-                        </div>
-                      ))}
-                    </td> */}
-                    <td>
-                      {kit.items.map((prod) => (
-                        <div style={{display: 'flex', flexDirection: 'column'}}>
-                          <p>{prod.product.short_code}</p>
-                        </div>
-                      ))}
-                    </td>
-                    <td>
-                      {kit.items.map((prod) => (
-                        <div style={{display: 'flex', flexDirection: 'column'}}>
-                          <p>{prod.product.name}</p>
-                        </div>
-                      ))}
-                    </td>
-                    <td>
-                      {kit.items.map((prod) => (
-                        <div style={{display: 'flex', flexDirection: 'column'}}>
-                          <p>{prod.quantity}</p>
-                        </div>
-                      ))}
-                    </td>
-                  </tr>
-                );
+                if (isClient && !ckLoading) {
+                  const temp = _.find(clientKits, (ck) => ck.kit_name === kit.kit);
+                  if (temp) {
+                    return (
+                      <tr>
+                        <td>{kit.kit}</td>
+                        <td>{kit.quantity}</td>
+                        <td>
+                          {kit.items.map((prod) => (
+                            <div style={{display: 'flex', flexDirection: 'column'}}>
+                              <p>{prod.product.short_code}</p>
+                            </div>
+                          ))}
+                        </td>
+                        <td>
+                          {kit.items.map((prod) => (
+                            <div style={{display: 'flex', flexDirection: 'column'}}>
+                              <p>{prod.product.name}</p>
+                            </div>
+                          ))}
+                        </td>
+                        <td>
+                          {kit.items.map((prod) => (
+                            <div style={{display: 'flex', flexDirection: 'column'}}>
+                              <p>{prod.quantity}</p>
+                            </div>
+                          ))}
+                        </td>
+                      </tr>
+                    );
+                  }
+                } else {
+                  return (
+                    <tr>
+                      <td>{kit.kit}</td>
+                      <td>{kit.quantity}</td>
+                      <td>
+                        {kit.items.map((prod) => (
+                          <div style={{display: 'flex', flexDirection: 'column'}}>
+                            <p>{prod.product.short_code}</p>
+                          </div>
+                        ))}
+                      </td>
+                      <td>
+                        {kit.items.map((prod) => (
+                          <div style={{display: 'flex', flexDirection: 'column'}}>
+                            <p>{prod.product.name}</p>
+                          </div>
+                        ))}
+                      </td>
+                      <td>
+                        {kit.items.map((prod) => (
+                          <div style={{display: 'flex', flexDirection: 'column'}}>
+                            <p>{prod.quantity}</p>
+                          </div>
+                        ))}
+                      </td>
+                    </tr>
+                  );
+                }
               })}
             </tbody>
           </Table>
@@ -278,7 +306,8 @@ const ReturnDocket = ({location, isClient}) => {
               </Col>
               <Col span={16}>
                 <p style={{display: 'inline', wordWrap: 'break-word', textTransform: 'capitalize'}}>
-                  {`${String.fromCharCode(0x20b9)} ${inWords(total)}`}
+                  {/* {`${String.fromCharCode(0x20b9)} ${inWords(total)}`} */}
+                  {`${String.fromCharCode(0x20b9)} ${inWords(49470)}`}
                 </p>
               </Col>
               <br />
@@ -318,7 +347,8 @@ const ReturnDocket = ({location, isClient}) => {
               <Col span={24}>
                 <p style={{fontWeight: 'bold', display: 'inline'}}>Grand Total : </p>
                 <p style={{fontWeight: 'bold', display: 'inline', wordWrap: 'break-word'}}>
-                  {`${String.fromCharCode(0x20b9)} ${total}`}
+                  {/* {`${String.fromCharCode(0x20b9)} ${total}`} */}
+                  {`${String.fromCharCode(0x20b9)} ${49470}`}
                 </p>
               </Col>
             </Row>
@@ -351,9 +381,8 @@ const ReturnDocket = ({location, isClient}) => {
             <p style={{display: 'inline'}}>
               The packaging products given on hire shall always remain the property of{' '}
               {`<Company Name>`}
-              Logistics Private Limited and shall not be used for the purpose otherwise agreed upon.
-              The same shall be returned at the address notified by {`<Company Name>`} Logistics
-              Private Limited.
+              Private Limited and shall not be used for the purpose otherwise agreed upon. The same
+              shall be returned at the address notified by {`<Company Name>`} Private Limited.
             </p>
             <br />
             <p style={{fontWeight: 'bold', display: 'inline'}}>Note : </p>

@@ -1,9 +1,13 @@
+import {ifNotStrReturnA} from '../helpers/mrHelper';
+
 export default [
   {
     title: 'Client Name',
     key: 'client_name',
     width: '12vw',
     dataIndex: 'client_name',
+    sorter: (a, b) => ifNotStrReturnA(a.client_name).localeCompare(ifNotStrReturnA(b.client_name)),
+    showSorterTooltip: false,
   },
   {
     title: 'Client Shipping Address',
@@ -16,6 +20,11 @@ export default [
     key: 'client_shipping_city',
     dataIndex: 'client_shipping_city',
     width: '10vw',
+    sorter: (a, b) =>
+      ifNotStrReturnA(a.client_shipping_city).localeCompare(
+        ifNotStrReturnA(b.client_shipping_city),
+      ),
+    showSorterTooltip: false,
   },
   {
     title: 'Client Shipping Pincode',
@@ -40,6 +49,11 @@ export default [
     key: 'client_contact_person',
     dataIndex: 'client_contact_person',
     width: '15vw',
+    sorter: (a, b) =>
+      ifNotStrReturnA(a.client_contact_person).localeCompare(
+        ifNotStrReturnA(b.client_contact_person),
+      ),
+    showSorterTooltip: false,
   },
   // {
   //   title: 'Client Billing Address',
@@ -51,6 +65,8 @@ export default [
     key: 'client_city',
     dataIndex: 'client_city',
     width: '8vw',
+    sorter: (a, b) => ifNotStrReturnA(a.client_city).localeCompare(ifNotStrReturnA(b.client_city)),
+    showSorterTooltip: false,
   },
   {
     title: 'Client Pincode',

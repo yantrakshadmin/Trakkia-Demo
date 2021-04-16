@@ -4,15 +4,6 @@ import _ from 'lodash';
 
 const {Title, Paragraph} = Typography;
 
-// part_name:record.pfep.part_name,
-//   receiver_location: record.pfep.receivers.length>0?record.pfep.receivers[0].location:'',
-//   proposed_solution_proposal:record.standard_assets,
-//   component_per_solution:record.component_perkit,
-//   price_per_component:_.round(record.trip_cost/record.component_perkit, 2),
-//   trip_cost:record.trip_cost,
-//   parts_volume_per_month :record.volume_pm,
-//   cycle_days:record.pfep.min_cycle_days,
-
 export const PrintCp = ({location}) => {
   const {state} = location;
   // const { receiverDetails} = state;
@@ -134,7 +125,7 @@ export const PrintCp = ({location}) => {
         <Col span={24}>
           <div className="row justify-between align-center">
             <div className="print-cp-logo">
-              <img src={`${process.env.PUBLIC_URL}/home-logo.png`} className="" alt="Trakkia" />
+              <img src={`${process.env.PUBLIC_URL}/home-logo.png`} className="" alt="Yantraksh" />
             </div>
             <div>
               <text>
@@ -195,14 +186,7 @@ export const PrintCp = ({location}) => {
         ].map((i, key) => (
           <Row key={i.key}>
             <Col span={24} className="px-2">
-              {state.receiverDetails.length > 1
-                ? state.receiverDetails.map((item) => (
-                    <div>
-                      {item.receiver_name}
-                      <br />
-                    </div>
-                  ))
-                : i.value}
+              {state.receiverDetails.length > 1 ? state.receiverDetails[0].receiver_name : i.value}
             </Col>
           </Row>
         ))}
@@ -236,13 +220,13 @@ export const PrintCp = ({location}) => {
       <Paragraph>
         * Cycle time to be revisited after regular intervals, pricing may vary if cycle time varies.
         <br />
-        YANTRA Packs will not be responsible for Loading & Unloading activities at{' '}
+        {`<Company Name>`} will not be responsible for Loading & Unloading activities at{' '}
         {state.pfep.sender_client} and{' '}
         {state.receiverDetails.length > 1
           ? 'Multiple Receivers'
           : state.receiverDetails[0].receiver_name}
         <br />
-        YANTRA Packs will be responsible for reverse logistics from Destination to Origin.
+        {`<Company Name>`} will be responsible for reverse logistics from Destination to Origin.
         <br />
         The Commercial Offer is Valid for 30 days.
       </Paragraph>

@@ -97,9 +97,9 @@ export const PREPSolutionRequiredFormFields = [
     key: 'mul_parts_single_pocket',
     type: FORM_ELEMENT_TYPES.INPUT,
     kwargs: {
-      placeholder: 'Multiple Parts in Single Packet',
+      placeholder: 'Multiple Parts in Single Pocket',
     },
-    customLabel: 'Multiple Parts in Single Packet',
+    customLabel: 'Multiple Parts in Single Pocket',
     others: {
       formOptions: {noStyle: true},
     },
@@ -147,5 +147,16 @@ export const PREPSolutionRequiredFormFields = [
     },
     type: FORM_ELEMENT_TYPES.INPUT,
     customLabel: 'Parts/PM',
+  },
+  {
+    key: 'solution_stacking_nesting',
+    kwargs: {
+      placeholder: 'Stacking or Nesting of parts',
+    },
+    others: {
+      formOptions: {noStyle: true},
+    },
+    type: FORM_ELEMENT_TYPES.INPUT,
+    customLabel: 'Stacking or Nesting of parts',
   },
 ];

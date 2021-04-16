@@ -3,7 +3,8 @@ import {connect} from 'react-redux';
 import moment from 'moment';
 import {DEFAULT_BASE_URL} from 'common/constants/enviroment';
 import {useAPI} from 'common/hooks/api';
-import {Row, Col, Form, Button, Typography} from 'antd';
+import {loadAPI} from 'common/helpers/api';
+import {Row, Col, Form, Button, Typography, notification} from 'antd';
 import {FORM_ELEMENT_TYPES} from '../../constants/formFields.constant';
 import _ from 'lodash';
 
@@ -16,11 +17,15 @@ const StockingReport = ({currentPage}) => {
   const [fromDate, setFromDate] = useState(null);
   const [form] = Form.useForm();
 
+  const [btnLoading, setBtnLoading] = useState(false);
+
   const {data: clients} = useAPI('/clients/', {});
 
   const onChange = async () => {
-    const tempFrom = moment(form.getFieldValue('dateFrom')).format('YYYY-MM-DD+HH:MM');
-    const tempTo = moment(form.getFieldValue('dateTo')).format('YYYY-MM-DD+HH:MM');
+    const tempFrom = moment(form.getFieldValue('dateFrom'))
+      .startOf('date')
+      .format('YYYY-MM-DD+HH:MM');
+    const tempTo = moment(form.getFieldValue('dateTo')).endOf('date').format('YYYY-MM-DD+HH:MM');
     setToDate(tempTo);
     setFromDate(tempFrom);
     setClient(form.getFieldValue('cname'));
@@ -84,9 +89,27 @@ const StockingReport = ({currentPage}) => {
         </Row> */}
         <Row>
           <Button
-            href={`${DEFAULT_BASE_URL}/demandvallot-report/?cname=${client}`}
+            //href={`${DEFAULT_BASE_URL}/demandvallot-report/?cname=${client}`}
+            onClick={async () => {
+              await setBtnLoading(true);
+              const d = await loadAPI(`/demandvallot-report/?cname=${client}`);
+              if (d.status === 403) {
+                notification.error({
+                  message: 'Access Denied',
+                  description: 'You do not have permissions to access this module.',
+                });
+              } else {
+                let hiddenElement = document.createElement('a');
+                hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(d.data);
+                hiddenElement.target = '_blank';
+                hiddenElement.download = 'vp-report.csv';
+                hiddenElement.click();
+              }
+              setBtnLoading(false);
+            }}
             rel="noopener noreferrer"
-            target="blank">
+            target="blank"
+            loading={btnLoading}>
             Download CSV
           </Button>
         </Row>

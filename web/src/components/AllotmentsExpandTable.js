@@ -4,24 +4,28 @@ import {useAPI} from 'common/hooks/api';
 
 const cols = [
   {
-    title: 'Kit',
-    key: 'kit',
-    dataIndex: 'kit',
+    title: 'Kit Name',
+    key: 'kit_name',
+    render: (text, record) => {
+      return record.kit;
+    },
   },
   {
-    title: 'Flow',
-    key: 'flow',
-    dataIndex: 'flow',
-  },
-  {
-    title: 'Asked Qty',
+    title: 'Asked Quantity',
     key: 'asked_quantity',
     dataIndex: 'asked_quantity',
   },
   {
-    title: 'Alloted Qty',
+    title: 'Alloted Quantity',
     key: 'alloted_quantity',
     dataIndex: 'alloted_quantity',
+  },
+  {
+    title: 'Flow Name',
+    key: 'flow_name',
+    render: (text, record) => {
+      return record.flow;
+    },
   },
 ];
 
@@ -35,7 +39,12 @@ const ExpandTable = (props) => {
         {loading ? (
           <Spin spinning={loading} />
         ) : (
-          <Table dataSource={data[0].flows} columns={cols} size="small" pagination={false} />
+          <Table
+            dataSource={data[0] ? data[0].flows || [] : []}
+            columns={cols}
+            size="small"
+            pagination={false}
+          />
         )}
       </Col>
     </Row>

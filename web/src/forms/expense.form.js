@@ -8,6 +8,8 @@ import {PlusOutlined, MinusCircleOutlined} from '@ant-design/icons';
 import {useControlledSelect} from '../hooks/useControlledSelect';
 import formItem from '../hocs/formItem.hoc';
 
+import {ifNanReturnZero} from 'common/helpers/mrHelper';
+
 import moment from 'moment';
 
 import _ from 'lodash';
@@ -187,6 +189,22 @@ export const ExpenseForm = ({id, onCancel, onDone, isEmployee}) => {
       if (form.getFieldValue('transaction_type')) {
         setTTTouched(true);
       }
+      try {
+        const tr = form.getFieldValue('transactions');
+        const newTr = tr.map((t) => {
+          const s =
+            ifNanReturnZero(t.f_mile) +
+            ifNanReturnZero(t.long_haul) +
+            ifNanReturnZero(t.l_mile) +
+            ifNanReturnZero(t.labour) +
+            ifNanReturnZero(t.others);
+          return {
+            ...t,
+            total_cost: s,
+          };
+        });
+        form.setFieldsValue({transactions: newTr});
+      } catch (err) {}
     }
   }, [loading]);
 
@@ -214,6 +232,32 @@ export const ExpenseForm = ({id, onCancel, onDone, isEmployee}) => {
               });
             }
           }
+          if (thisField === 'transactions') {
+            const thisListField = data[0].name[2];
+            if (
+              thisListField === 'f_mile' ||
+              thisListField === 'long_haul' ||
+              thisListField === 'l_mile' ||
+              thisListField === 'labour' ||
+              thisListField === 'others'
+            ) {
+              try {
+                const fieldKey = data[0].name[1];
+                const transactions = form.getFieldValue('transactions');
+                console.log(data[0].name);
+                const t =
+                  ifNanReturnZero(form.getFieldValue(['transactions', fieldKey, 'f_mile'])) +
+                  ifNanReturnZero(form.getFieldValue(['transactions', fieldKey, 'long_haul'])) +
+                  ifNanReturnZero(form.getFieldValue(['transactions', fieldKey, 'l_mile'])) +
+                  ifNanReturnZero(form.getFieldValue(['transactions', fieldKey, 'labour'])) +
+                  ifNanReturnZero(form.getFieldValue(['transactions', fieldKey, 'others']));
+                Object.assign(transactions[fieldKey], {
+                  total_cost: t === 0 ? null : t,
+                });
+                form.setFieldsValue({transactions});
+              } catch (err) {}
+            }
+          }
         }
       }
     },
@@ -226,7 +270,7 @@ export const ExpenseForm = ({id, onCancel, onDone, isEmployee}) => {
       {renderAlert()}
       <Form
         onFinish={preProcess}
-        initialValues={{status: 'Hold'}}
+        initialValues={{status: 'Hold', gst: 0}}
         form={form}
         layout="vertical"
         hideRequiredMark

@@ -17,7 +17,7 @@ import {connect} from 'react-redux';
 import {useTableSearch} from 'hooks/useTableSearch';
 import {deleteAddMr, retrieveEmployeeMrsEfficient} from 'common/api/auth';
 import moment from 'moment';
-import {ALLOTMENT_DOCKET_PASSWORD} from 'common/constants/allotmentDocketPassword';
+import {ALLOTMENT_DOCKET_PASSWORD} from 'common/constants/passwords';
 import {EyeInvisibleOutlined, EyeTwoTone} from '@ant-design/icons';
 import {loadAPI} from 'common/helpers/api';
 import {useAPI} from 'common/hooks/api';
@@ -30,6 +30,9 @@ import {deleteHOC} from '../../hocs/deleteHoc';
 import Delete from '../../icons/Delete';
 import {ActionsPopover} from '../../components/ActionsPopover';
 import {MRRejectionForm} from '../../forms/MRRejection.form';
+import DeleteWithPassword from '../../components/DeleteWithPassword';
+import {DEFAULT_PASSWORD} from 'common/constants/passwords';
+import NoPermissionAlert from 'components/NoPermissionAlert';
 
 const {Search} = Input;
 const {Title} = Typography;
@@ -43,7 +46,7 @@ const ReceiverClientEmployeeScreen = ({currentPage}) => {
   const [rejectionVisible, setRejectionVisible] = useState(false);
   const [popoverVisible, setPopoverVisible] = useState(false);
   const [popoverEditVisible, setPopoverEditVisible] = useState(false);
-  const {filteredData, loading, reload} = useTableSearch({
+  const {filteredData, loading, reload, hasPermission} = useTableSearch({
     searchVal,
     retrieve: retrieveEmployeeMrsEfficient,
   });
@@ -319,7 +322,17 @@ const ReceiverClientEmployeeScreen = ({currentPage}) => {
               <Edit />
             </Button>
           </Popover>
-          <Popconfirm
+          <DeleteWithPassword
+            password={DEFAULT_PASSWORD}
+            deleteHOC={deleteHOC({
+              record,
+              reload,
+              api: deleteAddMr,
+              success: 'Deleted MR successfully',
+              failure: 'Error in deleting MR',
+            })}
+          />
+          {/* <Popconfirm
             title="Confirm Delete"
             onCancel={(e) => e.stopPropagation()}
             onConfirm={deleteHOC({
@@ -339,7 +352,7 @@ const ReceiverClientEmployeeScreen = ({currentPage}) => {
               onClick={(e) => e.stopPropagation()}>
               <Delete />
             </Button>
-          </Popconfirm>
+          </Popconfirm> */}
         </div>
       ),
     },
@@ -361,7 +374,7 @@ const ReceiverClientEmployeeScreen = ({currentPage}) => {
   };
 
   return (
-    <>
+    <NoPermissionAlert hasPermission={hasPermission}>
       <Modal
         maskClosable={false}
         visible={materialReqVisible}
@@ -445,7 +458,7 @@ const ReceiverClientEmployeeScreen = ({currentPage}) => {
         //csvdata={csvData}
         //csvname={`MRs${searchVal}.csv`}
       />
-    </>
+    </NoPermissionAlert>
   );
 };
 

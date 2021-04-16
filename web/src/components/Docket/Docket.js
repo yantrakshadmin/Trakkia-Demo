@@ -96,7 +96,7 @@ const Docket = ({location, match}) => {
       <div className="container-docket">
         <div className="header-docket">
           <div className="logo-docket">
-            <img src={`${process.env.PUBLIC_URL}/home-logo.png`} alt="Trakkia" />
+            <img src={`${process.env.PUBLIC_URL}/home-logo.png`} alt="Yantraksh" />
           </div>
           <div className="heading-docket">
             <Title level={2} style={{fontWeight: 'bold'}}>
@@ -364,10 +364,8 @@ const Docket = ({location, match}) => {
             <p style={{fontWeight: 'bold', display: 'inline'}}>Declaration : </p>
             <p style={{display: 'inline'}}>
               The packaging products given on hire shall always remain the property of{' '}
-              {`<Company Name>`}
-              Logistics Private Limited and shall not be used for the purpose otherwise agreed upon.
-              The same shall be returned at the address notified by {`<Company Name>`} Logistics
-              Private Limited.
+              {`<Company Name>`} and shall not be used for the purpose otherwise agreed upon. The
+              same shall be returned at the address notified by {`<Company Name>`}.
             </p>
             <br />
             <p style={{fontWeight: 'bold', display: 'inline'}}>Note : </p>

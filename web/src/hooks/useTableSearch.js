@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 
-export const useTableSearch = ({ searchVal, retrieve, reqData }) => {
+export const useTableSearch = ({searchVal, retrieve, reqData, retrieveParams}) => {
   const [filteredData, setFilteredData] = useState([]);
   const [origData, setOrigData] = useState(null);
   const [searchIndex, setSearchIndex] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
+  const [hasPermission, setHasPermission] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -13,17 +14,22 @@ export const useTableSearch = ({ searchVal, retrieve, reqData }) => {
       if (!allValues) allValues = [];
       for (const key in d) {
         if (typeof d[key] === 'object') crawl(d[key], allValues);
-        else allValues.push(`${d[key]  } `);
+        else allValues.push(`${d[key]} `);
       }
       return allValues;
     };
     const fetchData = async () => {
       let fullData = null;
       if (!reqData && retrieve) {
-        const { data } = await retrieve();
-        fullData = data;
-        setOrigData(data);
-        setFilteredData(data);
+        const {data, status} = await retrieve(retrieveParams || null);
+        if (status === 403) {
+          setHasPermission(false);
+        } else {
+          fullData = data;
+          setOrigData(data);
+          setFilteredData(data);
+          setHasPermission(true);
+        }
       } else {
         fullData = reqData;
         setOrigData(reqData);
@@ -32,7 +38,7 @@ export const useTableSearch = ({ searchVal, retrieve, reqData }) => {
       if (fullData) {
         const searchInd = fullData.map((d) => {
           const allValues = crawl(d);
-          return { allValues: allValues.toString() };
+          return {allValues: allValues.toString()};
         });
         setSearchIndex(searchInd);
         setLoading(false);
@@ -61,5 +67,5 @@ export const useTableSearch = ({ searchVal, retrieve, reqData }) => {
     setFilteredData(origData);
   };
 
-  return { filteredData, loading, reload };
+  return {filteredData, loading, reload, hasPermission};
 };

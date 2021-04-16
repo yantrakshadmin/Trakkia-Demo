@@ -6,7 +6,7 @@ import {Link} from '@reach/router';
 import {useAPI} from 'common/hooks/api';
 import {deleteOutward} from 'common/api/auth';
 import {outwardDocketColumn} from 'common/columns/outwardDocket.column';
-import {GetUniqueValueNested} from 'common/helpers/getUniqueValues';
+import {GetUniqueValue} from 'common/helpers/getUniqueValues';
 import {loadAPI} from 'common/helpers/api';
 import {DEFAULT_BASE_URL} from 'common/constants/enviroment';
 import TableWithTabHOC from '../../hocs/TableWithTab.hoc';
@@ -24,6 +24,7 @@ import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBarcode, faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 import {yantraColors} from '../../helpers/yantraColors';
+import NoPermissionAlert from 'components/NoPermissionAlert';
 
 const {Search} = Input;
 
@@ -36,7 +37,10 @@ const OutwardDocketScreen = ({currentPage, isEmployee}) => {
   const user = useSelector((s) => s.user.userMeta.id);
   console.log(user, isEmployee, 'Props');
 
-  const {data: outwards, loading, reload} = useAPI(isEmployee ? 'emp-outwards/' : '/outwards/', {});
+  const {data: outwards, loading, reload, status} = useAPI(
+    isEmployee ? 'emp-outwards/' : '/outwards/',
+    {},
+  );
   const {filteredData} = useTableSearch({
     searchVal,
     reqData,
@@ -77,21 +81,26 @@ const OutwardDocketScreen = ({currentPage, isEmployee}) => {
       dataIndex: 'sending_location',
       key: 'sending_location',
       width: 400,
-      render: (location) => (
-        <div>
-          {location.name} - {location.address}
-        </div>
-      ),
-      filters: GetUniqueValueNested(filteredData || [], 'sending_location', 'name'),
-      onFilter: (value, record) => record.sending_location.name === value,
+      filters: GetUniqueValue(filteredData || [], 'sending_location'),
+      onFilter: (value, record) => record.sending_location === value,
     },
+    isEmployee
+      ? {
+          title: 'Sender Client',
+          dataIndex: 'owner',
+          key: 'owner',
+          width: 400,
+          filters: GetUniqueValue(filteredData || [], 'owner'),
+          onFilter: (value, record) => record.owner === value,
+        }
+      : {},
     // {
     //   title: 'Sender Client',
     //   dataIndex: 'owner',
     //   key: 'owner',
     //   width: 400,
     //   render: (i) => <div>{i.client_name}</div>,
-    //   filters: GetUniqueValueNested(filteredData || [], 'owner', 'client_name'),
+    //   filters: GetUniqueValue(filteredData || [], 'owner', 'client_name'),
     //   onFilter: (value, record) => record.owner.client_name === value.client_name,
     // },
     ...outwardDocketColumn,
@@ -246,27 +255,29 @@ const OutwardDocketScreen = ({currentPage, isEmployee}) => {
             disabled={isEmployee ? true : false}>
             <Edit />
           </Button>
-          <Popconfirm
-            title="Confirm Delete"
-            onConfirm={deleteHOC({
-              record,
-              reload,
-              api: deleteOutward,
-              success: 'Deleted Outward Docket Successfully',
-              failure: 'Error in deleting Outward Docket',
-            })}>
-            <Button
-              style={{
-                backgroundColor: 'transparent',
-                boxShadow: 'none',
-                border: 'none',
-                padding: '1px',
-              }}
-              onClick={(e) => e.stopPropagation()}
-              disabled={isEmployee ? true : false}>
-              <Delete />
-            </Button>
-          </Popconfirm>
+          {isEmployee ? null : (
+            <Popconfirm
+              title="Confirm Delete"
+              onConfirm={deleteHOC({
+                record,
+                reload,
+                api: deleteOutward,
+                success: 'Deleted Outward Docket Successfully',
+                failure: 'Error in deleting Outward Docket',
+              })}>
+              <Button
+                style={{
+                  backgroundColor: 'transparent',
+                  boxShadow: 'none',
+                  border: 'none',
+                  padding: '1px',
+                }}
+                onClick={(e) => e.stopPropagation()}
+                disabled={isEmployee ? true : false}>
+                <Delete />
+              </Button>
+            </Popconfirm>
+          )}
         </div>
       ),
     },
@@ -294,7 +305,7 @@ const OutwardDocketScreen = ({currentPage, isEmployee}) => {
   };
 
   return (
-    <>
+    <NoPermissionAlert hasPermission={isEmployee ? (status === 403 ? false : true) : true}>
       <div style={{display: 'flex', justifyContent: 'flex-end'}}>
         <div style={{width: '15vw', display: 'flex', alignItems: 'flex-end'}}>
           <Search onChange={(e) => setSearchVal(e.target.value)} placeholder="Search" enterButton />
@@ -316,7 +327,7 @@ const OutwardDocketScreen = ({currentPage, isEmployee}) => {
         formParams={{transaction_no: TN}}
         cancelEditing={cancelEditing}
       />
-    </>
+    </NoPermissionAlert>
   );
 };
 

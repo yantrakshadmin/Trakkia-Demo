@@ -401,6 +401,12 @@ export const retieveReceiverClients = (id) =>
     secure: true,
   });
 
+export const retieveReceiverClientsClientSide = () =>
+  loadAPI(`/client-reciever-client/`, {
+    method: 'GET',
+    secure: true,
+  });
+
 export const createFlow = ({
   flow_name,
   flow_info,
@@ -814,6 +820,17 @@ export const tpFileUpload = (req) =>
       'Content-Type': `multipart/form-data  boundary=${Math.random().toString().substr(2)}`,
     },
   });
+
+export const tpFileReUpload = (id, req) =>
+  loadAPI(`/reupload-tp/${id}/`, {
+    method: 'PATCH',
+    data: req,
+    secure: true,
+    headers: {
+      'Content-Type': `multipart/form-data  boundary=${Math.random().toString().substr(2)}`,
+    },
+  });
+
 export const createReturn = (data) =>
   loadAPI('/create-return/', {
     method: 'POST',
@@ -1144,6 +1161,57 @@ export const deleteTestInv = (id) =>
     secure: true,
   });
 
+export const retrieveSC2TestInvClientSide = (rp) => {
+  return loadAPI(`sc-inv-items/?id=${rp.id}`, {
+    method: 'GET',
+    secure: true,
+  });
+};
+
+export const retrieveSC2TestInv = (data) => {
+  return loadAPI('sc-inv-items/', {
+    method: 'GET',
+    secure: true,
+    data,
+  });
+};
+
+export const createSC2TestInv = (data) => {
+  return loadAPI('create-sc-inv/', {
+    method: 'POST',
+    secure: true,
+    data,
+  });
+};
+
+export const deleteSC2TestInv = (id) =>
+  loadAPI(`/edit-sc-inv/${id}/`, {
+    method: 'DELETE',
+    secure: true,
+  });
+
+export const retrieveRC2TestInv = (data) => {
+  return loadAPI('rc-inv-items/', {
+    method: 'GET',
+    secure: true,
+    data,
+  });
+};
+
+export const createRC2TestInv = (data) => {
+  return loadAPI('create-rc-inv/', {
+    method: 'POST',
+    secure: true,
+    data,
+  });
+};
+
+export const deleteRC2TestInv = (id) =>
+  loadAPI(`/edit-rc-inv/${id}/`, {
+    method: 'DELETE',
+    secure: true,
+  });
+
 export const createMRStatus = (data) => {
   return loadAPI('create-mrstatus/', {
     method: 'POST',
@@ -1195,4 +1263,148 @@ export const editExpenseTest = (id, src) =>
     headers: {
       'Content-Type': `multipart/form-data  boundary=${Math.random().toString().substr(2)}`,
     },
+  });
+
+export const createAdjustment = (src) =>
+  loadAPI('/create-adjustments/', {
+    method: 'POST',
+    data: src,
+    secure: true,
+    headers: {
+      'Content-Type': `multipart/form-data  boundary=${Math.random().toString().substr(2)}`,
+    },
+  });
+
+export const retrieveAdjustments = () =>
+  loadAPI('/adjustments/', {
+    method: 'GET',
+    secure: true,
+  });
+
+export const retrieveAdjustmentClients = () =>
+  loadAPI('/clientadjust/', {
+    method: 'GET',
+    secure: true,
+  });
+
+export const uploadAdjustmentDocument = (src) =>
+  loadAPI('/upload-audit/', {
+    method: 'POST',
+    data: src,
+    secure: true,
+    headers: {
+      'Content-Type': `multipart/form-data  boundary=${Math.random().toString().substr(2)}`,
+    },
+  });
+
+export const createClientAdjustment = (src) =>
+  loadAPI('/create-clientadjust/', {
+    method: 'POST',
+    data: src,
+    secure: true,
+  });
+
+export const createGroup = (src) =>
+  loadAPI('/create-group/', {
+    method: 'POST',
+    data: src,
+    secure: true,
+  });
+
+export const retrieveGroups = () =>
+  loadAPI('/group/', {
+    method: 'GET',
+    secure: true,
+  });
+
+export const deleteGroup = (id) =>
+  loadAPI(`/edit-group/${id}/`, {
+    method: 'DELETE',
+    secure: true,
+  });
+
+export const retrieveGroup = (id) =>
+  loadAPI(`/edit-group/${id}/`, {
+    method: 'GET',
+    secure: true,
+  });
+
+export const editGroup = (id, src) =>
+  loadAPI(`/edit-group/${id}/`, {
+    method: 'PATCH',
+    data: src,
+    secure: true,
+  });
+
+export const createSCAdjustment = (src) =>
+  loadAPI('/create-sc-adjustments/', {
+    method: 'POST',
+    data: src,
+    secure: true,
+    headers: {
+      'Content-Type': `multipart/form-data  boundary=${Math.random().toString().substr(2)}`,
+    },
+  });
+
+export const retrieveSCAdjustments = () =>
+  loadAPI('/sc-adjustments/', {
+    method: 'GET',
+    secure: true,
+  });
+
+export const createRCAdjustment = (src) =>
+  loadAPI('/create-rc-adjustments/', {
+    method: 'POST',
+    data: src,
+    secure: true,
+    headers: {
+      'Content-Type': `multipart/form-data  boundary=${Math.random().toString().substr(2)}`,
+    },
+  });
+
+export const retrieveRCAdjustments = () =>
+  loadAPI('/rc-adjustments/', {
+    method: 'GET',
+    secure: true,
+  });
+
+export const createRelocation = (src) =>
+  loadAPI('/create-relocation/', {
+    method: 'POST',
+    data: src,
+    secure: true,
+    // headers: {
+    //   'Content-Type': `multipart/form-data  boundary=${Math.random().toString().substr(2)}`,
+    // },
+  });
+
+export const retrieveRelocations = () =>
+  loadAPI('/relocations/', {
+    method: 'GET',
+    secure: true,
+  });
+
+export const deleteRelocation = (id) =>
+  loadAPI(`/edit-relocation/${id}/`, {
+    method: 'DELETE',
+    secure: true,
+  });
+
+export const retrieveRelocation = (id) =>
+  loadAPI(`/edit-relocation/${id}/`, {
+    method: 'GET',
+    secure: true,
+  });
+
+export const editRelocation = (id, src) =>
+  loadAPI(`/edit-relocation/${id}/`, {
+    method: 'PATCH',
+    data: src,
+    secure: true,
+  });
+
+export const retrieveRelocationDocketData = (tno) =>
+  loadAPI(`/relocation-template/?tno=${tno}`, {
+    method: 'GET',
+    secure: false,
   });

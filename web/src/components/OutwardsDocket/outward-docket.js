@@ -392,8 +392,8 @@ const OutwardDocket = ({location, match}) => {
             <p style={{display: 'inline'}}>
               The packaging products given on hire shall always remain the property of{' '}
               {`<Company Name>`}
-              Logistics Private Limited and shall not be used for the purpose otherwise agreed upon.
-              The same shall be returned at the address notified by {`<Company Name>`} Logistics
+              Private Limited and shall not be used for the purpose otherwise agreed upon. The same
+              shall be returned at the address notified by {`<Company Name>`}
               Private Limited.
             </p>
             <br />

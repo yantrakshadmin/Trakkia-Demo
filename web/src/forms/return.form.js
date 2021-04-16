@@ -42,10 +42,10 @@ const ReturnForm = ({ location }) => {
     success: 'Return created/edited successfully.',
     failure: 'Error in creating/editing return.',
     id: location.state.id,
-    done: () => navigate('../../employee/return-dockets/'),
-    close: () => navigate('../../employee/return-dockets/'),
+    done: () => navigate('/employee/return-dockets/'),
+    close: () => navigate('/employee/return-dockets/'),
   });
-  console.log('form ceck')
+  console.log('form ceck');
   useEffect(() => {
     // console.log(pcc);
   }, [pcc]);
@@ -111,13 +111,16 @@ const ReturnForm = ({ location }) => {
       });
       setProducts(prods);
       console.log(kitss);
-      setKits(kitss);
+      setKits(_.uniqBy(kitss, 'id'));
     };
     if (receiverClient) fetchKits();
   }, [receiverClient]);
 
+  const [addDisabled, setAddDisabled] = useState(false);
+
   const handleFieldsChange = async (data) => {
     // console.log(data, kitID);
+    setAddDisabled(false);
     if (data)
       if (data[0])
         if (data[0].name)
@@ -132,17 +135,19 @@ const ReturnForm = ({ location }) => {
               // console.log(data[0].name);
               if (kitID) {
                 console.log(kitID);
-                const rk = kits.filter((k) => k.id === kitID)[0];
-                const produces = [];
-                rk.products.forEach((p) => {
-                  produces.push({ product: p.product.id, product_quantity: p.quantity });
-                });
-                form.setFields([
-                  {
-                    name: [`items${data[0].name[1]}`],
-                    value: produces,
-                  },
-                ]);
+                const rk = _.find(kits, (k) => k.id === kitID);
+                if (rk) {
+                  const produces = [];
+                  rk.products.forEach((p) => {
+                    produces.push({ product: p.product.id, product_quantity: p.quantity });
+                  });
+                  form.setFields([
+                    {
+                      name: [`items${data[0].name[1]}`],
+                      value: produces,
+                    },
+                  ]);
+                }
               }
             }
             if (data[0].name[2] === 'quantity') {
@@ -151,21 +156,39 @@ const ReturnForm = ({ location }) => {
                 if (kitd) {
                   setKitID(kitd);
                 }
+                console.log(kitd,'!kit');
               }
               if (kitID) {
                 const q = data[0].value;
                 // let temp = form.getFieldValue(`items${data[0].name[1]}`);
-                const rk = kits.filter((k) => k.id === kitID)[0];
-                form.setFields([
-                  {
-                    name: [`items${data[0].name[1]}`],
-                    value: rk.products.map((p) => {
-                      // console.log(p.product_quantity, q);
-                      return { product: p.product.id, product_quantity: p.quantity * q };
-                    }),
-                  },
-                ]);
-                // console.log(rk);
+                // const rk = kits.filter((k) => k.id === kitID)[0];
+                const rk = _.find(kits, (k) => k.id === kitID);
+                console.log(rk,'kitID : ');
+                if (rk) {
+                  form.setFields([
+                    {
+                      name: [`items${data[0].name[1]}`],
+                      value: rk.products.map((p) => {
+                        // console.log(p.product_quantity, q);
+                        return { product: p.product.id, product_quantity: p.quantity * q };
+                      }),
+                    },
+                  ]);
+                  console.log(data[0].name[1],'rk')
+                }
+                setKitID(undefined)
+              }
+            }
+
+            if (data[0].name[2] === 'kit' || data[0].name[2] === 'quantity') {
+              const kts = form.getFieldValue('kits');
+              const lastK = kts[kts.length - 1];
+              if (lastK) {
+                if (lastK.kit && lastK.quantity) {
+                  setAddDisabled(false);
+                } else {
+                  setAddDisabled(true);
+                }
               }
             }
           }
@@ -186,7 +209,7 @@ const ReturnForm = ({ location }) => {
     // console.log(reqD);
     submit(reqD);
   };
-  console.log(pcc,'pcc')
+  console.log(pcc, 'pcc');
   return (
     <Spin spinning={loading}>
       <Divider orientation='left'>Return Docket Details</Divider>
@@ -409,8 +432,10 @@ const ReturnForm = ({ location }) => {
                           const temp = pcc;
                           setPcc([...pcc, pcc.length]);
                           add();
+                          setAddDisabled(true);
                         }}
-                        block>
+                        block
+                        disabled={!!addDisabled}>
                         <PlusOutlined />
                         {' '}
                         Add Item
@@ -481,7 +506,7 @@ const ReturnForm = ({ location }) => {
             Save
           </Button>
           <div className='p-2' />
-          <Button type='primary' onClick={() => navigate('../../employee/return-dockets/')}>
+          <Button type='primary' onClick={() => navigate('/employee/return-dockets/')}>
             Cancel
           </Button>
         </Row>

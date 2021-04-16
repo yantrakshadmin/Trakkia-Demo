@@ -1,33 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import leadColumns from 'common/columns/Leads.colums';
-import { Popconfirm, Button, Input, Modal } from 'antd';
-import { connect, useDispatch } from 'react-redux';
-import { useTableSearch } from 'hooks/useTableSearch';
-import { retrieveLeads, deleteLead, leadFileUpload } from 'common/api/auth';
+import {Popconfirm, Button, Input, Modal} from 'antd';
+import {connect, useDispatch} from 'react-redux';
+import {useTableSearch} from 'hooks/useTableSearch';
+import {retrieveLeads, deleteLead, leadFileUpload} from 'common/api/auth';
 import Delete from 'icons/Delete';
 import PersonTable from 'components/PersonTable';
-import { DiffOutlined,ToTopOutlined } from '@ant-design/icons'
-import { CLEAN_PFEP_DATA } from 'common/actions';
-import { deleteHOC } from 'hocs/deleteHoc';
+import {DiffOutlined, ToTopOutlined} from '@ant-design/icons';
+import {CLEAN_PFEP_DATA} from 'common/actions';
+import {deleteHOC} from 'hocs/deleteHoc';
 import Edit from 'icons/Edit';
 import TableWithTabHOC from 'hocs/TableWithTab.hoc';
-import { LeadsForm } from 'forms/leads.form';
-import { PFEPMainForm } from 'forms/PFEP/PFEPMain.form';
-import { UploadLeadForm } from 'forms/uploadLead.form';
-import { ActionsPopover } from 'components/ActionsPopover';
+import {LeadsForm} from 'forms/leads.form';
+import {PFEPMainForm} from 'forms/PFEP/PFEPMain.form';
+import {UploadLeadForm} from 'forms/uploadLead.form';
+import {ActionsPopover} from 'components/ActionsPopover';
+import NoPermissionAlert from 'components/NoPermissionAlert';
 
-const { Search } = Input;
+const {Search} = Input;
 
-const WarehouseEmployeeScreen = ({ currentPage }) => {
+const WarehouseEmployeeScreen = ({currentPage}) => {
   const [searchVal, setSearchVal] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [csvData, setCsvData] = useState(null);
   const [visible, setVisible] = useState(false);
   const [visibleUpload, setVisibleUpload] = useState(false);
-  const [lead,setLead] = useState(null);
-  const [popover, setPopover]=useState(false)
+  const [lead, setLead] = useState(null);
+  const [popover, setPopover] = useState(false);
 
-  const { filteredData, loading, reload } = useTableSearch({
+  const {filteredData, loading, reload, hasPermission} = useTableSearch({
     searchVal,
     retrieve: retrieveLeads,
   });
@@ -44,7 +45,6 @@ const WarehouseEmployeeScreen = ({ currentPage }) => {
     }
   }, [filteredData]);
 
-
   const columns = [
     ...leadColumns,
     {
@@ -53,34 +53,34 @@ const WarehouseEmployeeScreen = ({ currentPage }) => {
       fixed: 'right',
       width: '12vw',
       render: (text, record) => (
-        <div className='row align-center justify-evenly'>
+        <div className="row align-center justify-evenly">
           <ActionsPopover
             popover={popover}
             setPopover={setPopover}
-            triggerTitle='Options'
-            buttonList={
-          [{
-            Icon:DiffOutlined,
-            title:'Create PFEP',
-            onClick:(e) => {
-              setPopover(false);
-              setLead(record.lead_no);
-              setVisible(true)
-              e.stopPropagation();
-            }
-          },
-          {
-            Icon:ToTopOutlined,
-            title:'Upload PFEP',
-            onClick:(e) => {
-              setPopover(false);
-              setLead(record.lead_no);
-              setVisibleUpload(true)
-              e.stopPropagation();
-            }
-          }
-          ]
-        } />
+            triggerTitle="Options"
+            buttonList={[
+              {
+                Icon: DiffOutlined,
+                title: 'Create PFEP',
+                onClick: (e) => {
+                  setPopover(false);
+                  setLead(record.lead_no);
+                  setVisible(true);
+                  e.stopPropagation();
+                },
+              },
+              {
+                Icon: ToTopOutlined,
+                title: 'Upload PFEP',
+                onClick: (e) => {
+                  setPopover(false);
+                  setLead(record.lead_no);
+                  setVisibleUpload(true);
+                  e.stopPropagation();
+                },
+              },
+            ]}
+          />
           <Button
             style={{
               backgroundColor: 'transparent',
@@ -95,7 +95,7 @@ const WarehouseEmployeeScreen = ({ currentPage }) => {
             <Edit />
           </Button>
           <Popconfirm
-            title='Confirm Delete'
+            title="Confirm Delete"
             onCancel={(e) => e.stopPropagation()}
             onConfirm={deleteHOC({
               record,
@@ -133,10 +133,10 @@ const WarehouseEmployeeScreen = ({ currentPage }) => {
   const cancelEditing = () => setEditingId(null);
 
   return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <div style={{ width: '15vw', display: 'flex', alignItems: 'flex-end' }}>
-          <Search onChange={(e) => setSearchVal(e.target.value)} placeholder='Search' enterButton />
+    <NoPermissionAlert hasPermission={hasPermission}>
+      <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+        <div style={{width: '15vw', display: 'flex', alignItems: 'flex-end'}}>
+          <Search onChange={(e) => setSearchVal(e.target.value)} placeholder="Search" enterButton />
         </div>
       </div>
       <br />
@@ -144,58 +144,68 @@ const WarehouseEmployeeScreen = ({ currentPage }) => {
         maskClosable={false}
         visible={visible}
         destroyOnClose
-        style={{ minWidth: `80vw` }}
-        title=''
+        style={{minWidth: `80vw`}}
+        title=""
         onCancel={() => {
-          dispatch({ type:CLEAN_PFEP_DATA })
+          dispatch({type: CLEAN_PFEP_DATA});
           setVisible(false);
         }}
         footer={null}>
         <PFEPMainForm
-          onCancel={()=>{setVisible(false)}}
-          onDone={()=>{setVisible(false)}}
-          lead={lead} />
+          onCancel={() => {
+            setVisible(false);
+          }}
+          onDone={() => {
+            setVisible(false);
+          }}
+          lead={lead}
+        />
       </Modal>
       <Modal
         maskClosable={false}
         visible={visibleUpload}
         destroyOnClose
-        style={{ minWidth: `80vw` }}
-        title=''
+        style={{minWidth: `80vw`}}
+        title=""
         onCancel={() => {
           setVisibleUpload(false);
         }}
         footer={null}>
         <UploadLeadForm
-          onCancel={()=>{setVisibleUpload(false)}}
-          onDone={()=>{setVisibleUpload(false)}}
+          onCancel={() => {
+            setVisibleUpload(false);
+          }}
+          onDone={() => {
+            setVisibleUpload(false);
+          }}
           lead={lead}
           create={leadFileUpload}
+          varName="lead_no"
         />
       </Modal>
       <TableWithTabHOC
         rowKey={(record) => record.id}
         refresh={reload}
         tabs={tabs}
-        size='middle'
-        title='Leads'
+        size="middle"
+        title="Leads"
         editingId={editingId}
         cancelEditing={cancelEditing}
         modalBody={LeadsForm}
         modalWidth={60}
-        expandHandleKey='person'
+        expandHandleKey="person"
         ExpandBody={PersonTable}
-        expandParams={{ loading }}
-        scroll={{ x: 1200 }}
+        expandParams={{loading}}
+        scroll={{x: 1200}}
         csvdata={csvData}
-        csvname={`Leads${  searchVal  }.csv`}
+        csvname={`Leads${searchVal}.csv`}
       />
-    </>
+    </NoPermissionAlert>
   );
 };
 
 const mapStateToProps = (state) => {
-  return { currentPage: state.page.currentPage };
+  return {currentPage: state.page.currentPage};
 };
 
 export default connect(mapStateToProps)(WarehouseEmployeeScreen);

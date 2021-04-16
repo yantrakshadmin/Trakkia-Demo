@@ -55,6 +55,10 @@ export const outerRoutesEmployee = [
     path: '/outward-docket/:id',
     Component: lazy(() => import('components/OutwardsDocket/outward-docket')),
   },
+  {
+    path: '/relocation-docket/:id',
+    Component: lazy(() => import('components/RelocationDocket/RelocationDocket')),
+  },
 ];
 export const outerRoutesClient = [
   {
@@ -137,7 +141,6 @@ export const employeeRoutes = [
         path: '/master/flows/',
         Component: lazy(() => import('screens/employee/Flow.screen')),
       },
-
       {
         name: 'Sender Clients',
         path: '/master/clients/',
@@ -192,6 +195,13 @@ export const employeeRoutes = [
     Component: lazy(() => import('screens/employee/Return.screen')),
   },
   {
+    name: 'Relocation Docket',
+    icon: ['fas', 'money-check-alt'],
+    path: '/relocation/',
+    Component: lazy(() => import('screens/employee/Relocation.screen')),
+    props: {isEmployee: true},
+  },
+  {
     name: 'GRN',
     icon: ['fas', 'cart-arrow-down'],
     path: '/grn/',
@@ -210,7 +220,7 @@ export const employeeRoutes = [
     isSubMenu: true,
     subMenu: [
       {
-        name: 'Trakkia Inventory',
+        name: 'Warehouse Inventory',
         path: '/main-inventory/yantra-inventory/',
         Component: lazy(() => import('screens/employee/yantraInventory.screen.employee')),
       },
@@ -220,9 +230,56 @@ export const employeeRoutes = [
         Component: lazy(() => import('screens/employee/transitInventory.screen')),
       },
       {
-        name: 'Client Inventory',
+        name: 'Sender Client',
         path: '/main-inventory/inventory-clients/',
         Component: lazy(() => import('screens/employee/clientInventory.screen')),
+      },
+      {
+        name: 'Sender Client II',
+        path: '/main-inventory/sc-inventory-2/',
+        Component: lazy(() => import('screens/employee/clientInventory2.screen')),
+      },
+      {
+        name: 'Receiver Client',
+        path: '/main-inventory/inventory-rclients/',
+        Component: lazy(() => import('screens/employee/receiverClientInventory.screen')),
+      },
+      {
+        name: 'Receiver Client II',
+        path: '/main-inventory/rc-inventory-2/',
+        Component: lazy(() => import('screens/employee/receiverClientInventory2.screen')),
+      },
+      {
+        name: 'Adjustments',
+        path: '/main-inventory/adjustments/',
+        Component: lazy(() => import('screens/employee/adjustmentInventory.screen')),
+        props: {isEmployee: true},
+      },
+    ],
+  },
+  {
+    name: 'Adjustments Inventory',
+    icon: ['fas', 'boxes'],
+    path: '/adjustments-inventory/',
+    isSubMenu: true,
+    subMenu: [
+      {
+        name: 'Warehouse Adjustments',
+        path: '/adjustments-inventory/adjustments/',
+        Component: lazy(() => import('screens/employee/adjustmentInventory.screen')),
+        props: {isEmployee: true},
+      },
+      {
+        name: 'Sender Client Adjustments',
+        path: '/adjustments-inventory/sc-adjustments/',
+        Component: lazy(() => import('screens/employee/adjustmentSCInventory.screen')),
+        props: {isEmployee: true},
+      },
+      {
+        name: 'Receiver Client Adjustments',
+        path: '/adjustments-inventory/rc-adjustments/',
+        Component: lazy(() => import('screens/employee/adjustmentRCInventory.screen')),
+        props: {isEmployee: true},
       },
     ],
   },
@@ -231,7 +288,7 @@ export const employeeRoutes = [
     icon: ['fas', 'money-check-alt'],
     path: '/expense/',
     Component: lazy(() => import('screens/employee/Expense.screen')),
-    props: {isEmployee: false},
+    props: {isEmployee: true},
   },
   {
     name: 'Reports',
@@ -286,6 +343,13 @@ export const employeeRoutes = [
       },
     ],
   },
+  {
+    name: 'Roles',
+    icon: ['fas', 'money-check-alt'],
+    path: '/roles/',
+    Component: lazy(() => import('screens/employee/Roles.screen')),
+    props: {isEmployee: true},
+  },
 ];
 
 export const clientRoutes = [
@@ -303,10 +367,15 @@ export const clientRoutes = [
         Component: lazy(() => import('screens/client/kits.screen')),
       },
       {
-        name: 'Client Flows',
+        name: 'Flows',
         icon: ['fas', 'layer-group'],
         path: '/client-flows/',
         Component: lazy(() => import('screens/client/clientFlows.screen')),
+      },
+      {
+        name: 'Clients',
+        path: '/master/clients/',
+        Component: lazy(() => import('screens/client/ReceiverClient.screen')),
       },
     ],
   },
@@ -337,9 +406,53 @@ export const clientRoutes = [
     Component: lazy(() => import('screens/client/outwardDocket.screen')),
   },
   {
-    name: 'Return Reports',
+    name: 'Return Docket',
     icon: ['fas', 'chart-pie'],
-    path: '/return-reports/',
+    path: '/return-dockets/',
     Component: lazy(() => import('screens/client/returnReports.screen')),
+  },
+  {
+    name: 'Inventory',
+    icon: ['fas', 'boxes'],
+    path: '/main-inventory/sc-inventory-2/',
+    Component: lazy(() => import('screens/client/clientInventory2.screen')),
+  },
+  {
+    name: 'Reports',
+    icon: ['fas', 'chart-pie'],
+    path: '/reports/',
+    isSubMenu: true,
+    subMenu: [
+      {
+        name: 'Volume Plans',
+        path: '/reports/demands/',
+        Component: lazy(() => import('components/Reports/DemandClientSide.js')),
+      },
+      {
+        name: 'Allotments',
+        path: '/reports/allotments/',
+        Component: lazy(() => import('components/Reports/AllotmentClientSide.js')),
+      },
+      {
+        name: 'Returns',
+        path: '/reports/returns/',
+        Component: lazy(() => import('components/Reports/ReturnClientSide.js')),
+      },
+      {
+        name: 'Outwards',
+        path: '/reports/outwards/',
+        Component: lazy(() => import('components/Reports/OutwardClientSide.js')),
+      },
+      {
+        name: 'Floating',
+        path: '/reports/floating/',
+        Component: lazy(() => import('components/Reports/StockingClientSide.js')),
+      },
+      {
+        name: 'Loss/Excess',
+        path: '/reports/loss-excess/',
+        Component: lazy(() => import('components/Reports/LossExcessClientSide.js')),
+      },
+    ],
   },
 ];
