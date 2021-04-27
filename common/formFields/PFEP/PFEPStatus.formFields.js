@@ -1,4 +1,4 @@
-import { FORM_ELEMENT_TYPES } from 'web/src/constants/formFields.constant';
+import {FORM_ELEMENT_TYPES} from 'web/src/constants/formFields.constant';
 
 // {
 //     key: 'status',
@@ -20,8 +20,8 @@ export const PFEPStatusFormFields = [
     key: 'tp_shared',
     type: FORM_ELEMENT_TYPES.SWITCH,
     others: {
-      defaultValue:false,
-      formOptions:{ noStyle:true }
+      defaultValue: false,
+      formOptions: {noStyle: true},
     },
     customLabel: 'TP Shared',
   },
@@ -29,8 +29,8 @@ export const PFEPStatusFormFields = [
     key: 'cp_shared',
     type: FORM_ELEMENT_TYPES.SWITCH,
     others: {
-      defaultValue:false,
-      formOptions:{ noStyle:true }
+      defaultValue: false,
+      formOptions: {noStyle: true},
     },
     customLabel: 'CP Shared',
   },
@@ -38,8 +38,8 @@ export const PFEPStatusFormFields = [
     key: 'tp_approved',
     type: FORM_ELEMENT_TYPES.SWITCH,
     others: {
-      defaultValue:false,
-      formOptions:{ noStyle:true }
+      defaultValue: false,
+      formOptions: {noStyle: true},
     },
     customLabel: 'TP Approved',
   },
@@ -47,8 +47,8 @@ export const PFEPStatusFormFields = [
     key: 'cp_approved',
     type: FORM_ELEMENT_TYPES.SWITCH,
     others: {
-      defaultValue:false,
-      formOptions:{ noStyle:true }
+      defaultValue: false,
+      formOptions: {noStyle: true},
     },
     customLabel: 'CP Approved',
   },
@@ -56,8 +56,8 @@ export const PFEPStatusFormFields = [
     key: 'trials_done',
     type: FORM_ELEMENT_TYPES.SWITCH,
     others: {
-      defaultValue:false,
-      formOptions:{ noStyle:true }
+      defaultValue: false,
+      formOptions: {noStyle: true},
     },
     customLabel: 'Trials Done',
   },
@@ -66,8 +66,8 @@ export const PFEPStatusFormFields = [
     key: 'trials_approved',
     type: FORM_ELEMENT_TYPES.SWITCH,
     others: {
-      defaultValue:false,
-      formOptions:{ noStyle:true }
+      defaultValue: false,
+      formOptions: {noStyle: true},
     },
     customLabel: 'Trials Approved',
   },
@@ -75,8 +75,8 @@ export const PFEPStatusFormFields = [
     key: 'esa_signed',
     type: FORM_ELEMENT_TYPES.SWITCH,
     others: {
-      defaultValue:false,
-      formOptions:{ noStyle:true }
+      defaultValue: false,
+      formOptions: {noStyle: true},
     },
     customLabel: 'ESA Signed',
   },
@@ -86,8 +86,8 @@ export const PFEPStatusFormFields = [
     type: FORM_ELEMENT_TYPES.SWITCH,
     customLabel: 'Flow started',
     others: {
-      defaultValue:false,
-      formOptions:{ noStyle:true }
+      defaultValue: false,
+      formOptions: {noStyle: true},
     },
   },
   {
@@ -95,30 +95,34 @@ export const PFEPStatusFormFields = [
     type: FORM_ELEMENT_TYPES.SWITCH,
     customLabel: 'On Hold',
     others: {
-      formOptions:{ noStyle:true }
-    } },
+      formOptions: {noStyle: true},
+    },
+  },
   {
     key: 'pfep_dropped',
     type: FORM_ELEMENT_TYPES.SWITCH,
-    customLabel: 'PFEP Dropped',
+    customLabel: 'SCS Dropped',
     others: {
-      formOptions:{ noStyle:true }
-    } },
+      formOptions: {noStyle: true},
+    },
+  },
   {
     key: 'not_qualified',
     type: FORM_ELEMENT_TYPES.SWITCH,
     customLabel: 'Not Qualified',
     others: {
-      formOptions:{ noStyle:true }
-    } },
+      formOptions: {noStyle: true},
+    },
+  },
   {
     key: 'solution_remark',
     kwargs: {
       placeholder: 'Remark',
     },
     others: {
-      formOptions:{ noStyle:true }
-    },  type: FORM_ELEMENT_TYPES.INPUT,
+      formOptions: {noStyle: true},
+    },
+    type: FORM_ELEMENT_TYPES.INPUT,
     customLabel: 'Remark',
   },
-]
+];

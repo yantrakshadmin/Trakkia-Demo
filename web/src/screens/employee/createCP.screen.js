@@ -54,7 +54,7 @@ const CreateCPScreen = ({currentPage}) => {
       render: (record) => <div>{record.pfep.lead_no}</div>,
     },
     {
-      title: 'PFEP No.',
+      title: 'SCS No.',
       key: 'pfep_no',
       sorter: (a, b) => a.pfep.pfep_no - b.pfep.pfep_no,
       showSorterTooltip: false,
@@ -204,7 +204,7 @@ const CreateCPScreen = ({currentPage}) => {
 
   const tabs = [
     {
-      name: 'ALL PFEP',
+      name: 'ALL SCS',
       key: 'allPFEP',
       data: filteredData,
       columns,

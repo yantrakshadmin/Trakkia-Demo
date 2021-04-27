@@ -2,7 +2,7 @@ import {ifNotStrReturnA} from '../helpers/mrHelper';
 
 export const PFEPColumn = [
   {
-    title: 'PFEP Number',
+    title: 'SCS Number',
     key: 'pfepNo',
     dataIndex: 'pfep_no',
     width: '5vw',

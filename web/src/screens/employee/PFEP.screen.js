@@ -287,8 +287,8 @@ const PFEPEmployeeScreen = ({currentPage}) => {
               record,
               reload,
               api: deletePFEP,
-              success: 'Deleted PFEP Successfully',
-              failure: 'Error in deleting PFEP',
+              success: 'Deleted SCS Successfully',
+              failure: 'Error in deleting SCS',
             })}>
             <Button
               style={{
@@ -308,7 +308,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
 
   const tabs = [
     {
-      name: 'ALL PFEP',
+      name: 'ALL SCS',
       key: 'allPFEP',
       data: filteredData,
       columns,
@@ -378,7 +378,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
         refresh={reload}
         tabs={tabs}
         size="middle"
-        title="PFEP Creation"
+        title="SCS Creation"
         editingId={editingId}
         cancelEditing={() => {
           cancelEditing();
@@ -395,7 +395,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
         // expandParams={{ loading }}
         scroll={{x: 1200}}
         csvdata={csvData}
-        csvname={`PFEP${searchVal}.csv`}
+        csvname={`SCS${searchVal}.csv`}
       />
     </NoPermissionAlert>
   );

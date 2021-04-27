@@ -61,7 +61,7 @@ const WarehouseEmployeeScreen = ({currentPage}) => {
             buttonList={[
               {
                 Icon: DiffOutlined,
-                title: 'Create PFEP',
+                title: 'Create SCS',
                 onClick: (e) => {
                   setPopover(false);
                   setLead(record.lead_no);
@@ -71,7 +71,7 @@ const WarehouseEmployeeScreen = ({currentPage}) => {
               },
               {
                 Icon: ToTopOutlined,
-                title: 'Upload PFEP',
+                title: 'Upload SCS',
                 onClick: (e) => {
                   setPopover(false);
                   setLead(record.lead_no);
