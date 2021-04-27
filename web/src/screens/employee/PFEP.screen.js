@@ -80,16 +80,16 @@ const PFEPEmployeeScreen = ({currentPage}) => {
   }, [filteredData]);
 
   const columns = [
-    ...PFEPColumn,
-    {
-      title: 'Created Date',
-      key: 'date',
-      dataIndex: 'date',
-      width: '7vw',
-      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
-      showSorterTooltip: false,
-      render: (text) => <div>{utcDateFormatter(text)}</div>,
-    },
+    ...PFEPColumn.slice(0, 1),
+    // {
+    //   title: 'Created Date',
+    //   key: 'date',
+    //   dataIndex: 'date',
+    //   width: '7vw',
+    //   sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
+    //   showSorterTooltip: false,
+    //   render: (text) => <div>{utcDateFormatter(text)}</div>,
+    // },
     {
       title: 'Emitter',
       key: 'emitter',
@@ -119,23 +119,24 @@ const PFEPEmployeeScreen = ({currentPage}) => {
         ),
       showSorterTooltip: false,
     },
-    {
-      title: 'Contact Person',
-      key: 'contact_person',
-      width: '8vw',
-      render: (record) => (
-        <div>
-          {record.contact_person}
-          <br />
-          {record.contact_no}
-          <br />
-          {record.email}
-        </div>
-      ),
-      sorter: (a, b) =>
-        ifNotStrReturnA(a.contact_person).localeCompare(ifNotStrReturnA(b.contact_person)),
-      showSorterTooltip: false,
-    },
+    ...PFEPColumn.slice(1),
+    // {
+    //   title: 'Contact Person',
+    //   key: 'contact_person',
+    //   width: '8vw',
+    //   render: (record) => (
+    //     <div>
+    //       {record.contact_person}
+    //       <br />
+    //       {record.contact_no}
+    //       <br />
+    //       {record.email}
+    //     </div>
+    //   ),
+    //   sorter: (a, b) =>
+    //     ifNotStrReturnA(a.contact_person).localeCompare(ifNotStrReturnA(b.contact_person)),
+    //   showSorterTooltip: false,
+    // },
     {
       title: 'Solution Required',
       key: 'solution_required',
@@ -378,7 +379,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
         refresh={reload}
         tabs={tabs}
         size="middle"
-        title="SCS Creation"
+        title="SCS"
         editingId={editingId}
         cancelEditing={() => {
           cancelEditing();
