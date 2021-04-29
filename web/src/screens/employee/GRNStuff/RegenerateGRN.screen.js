@@ -11,15 +11,16 @@ import Document from 'icons/Document';
 import Download from 'icons/Download';
 import Print from 'icons/Print';
 
-import {deleteGRN, retrieveGRNBars} from 'common/api/auth';
-import {deleteHOC} from '../../hocs/deleteHoc';
-import {ProductTable} from '../../components/GRNProductsTable';
-import TableWithTabHOC from '../../hocs/TableWithTab.hoc';
-import {GRNForm} from '../../forms/GRN.form';
+import {deleteRegGRN, retrieveGRNBars} from 'common/api/auth';
+import {deleteHOC} from '../../../hocs/deleteHoc';
+import {ProductTable} from '../../../components/GRNProductsTable';
+import TableWithTabHOC from '../../../hocs/TableWithTab.hoc';
+import {GRNForm} from '../../../forms/RegenerateGRN.form';
 import {GetUniqueValue} from 'common/helpers/getUniqueValues';
-import TableWithTabHoc from '../../hocs/TableWithTab.hoc';
 
-import DeleteWithPassword from '../../components/DeleteWithPassword';
+import moment from 'moment';
+
+import DeleteWithPassword from '../../../components/DeleteWithPassword';
 import {DEFAULT_PASSWORD} from 'common/constants/passwords';
 import NoPermissionAlert from 'components/NoPermissionAlert';
 
@@ -33,7 +34,7 @@ const KitEmployeeScreen = ({currentPage}) => {
   const [barLoading, setBarLoading] = useState(false);
   const [barID, setBarID] = useState(null);
 
-  const {data: grns, loading, reload, status} = useAPI('/grns/', {});
+  const {data: grns, loading, reload, status} = useAPI('/regrns/', {});
 
   const {filteredData} = useTableSearch({
     searchVal,
@@ -46,13 +47,8 @@ const KitEmployeeScreen = ({currentPage}) => {
         const newData = grns.map((grn) => ({
           id: grn.id,
           warehouse: grn.warehouse.name,
-          material_vendor: grn.material_vendor.name,
-          transport_vendor: grn.transport_vendor.name,
-          reference_no: grn.reference_no,
-          invoice_no: grn.invoice_no,
-          inward_date: grn.inward_date,
+          date: grn.inward_date,
           products: grn.items,
-          document: grn.document,
         }));
         setReqData(newData);
       };
@@ -100,10 +96,12 @@ const KitEmployeeScreen = ({currentPage}) => {
 
   const columns = [
     {
-      title: 'GRN ID',
-      key: 'id',
-      dataIndex: 'id',
-      sorter: (a, b) => a.id - b.id,
+      title: 'Date',
+      key: 'date',
+      sorter: (a, b) => moment(a.inward_date).unix() - moment(b.inward_date).unix(),
+      render: (text, record) => {
+        return moment(record.inward_date).format('DD/MM/YYYY');
+      },
     },
     {
       title: 'Warehouse',
@@ -112,7 +110,6 @@ const KitEmployeeScreen = ({currentPage}) => {
       filters: GetUniqueValue(filteredData || [], 'warehouse'),
       onFilter: (value, record) => record.warehouse === value,
     },
-    ...GRNColumns,
     {
       title: 'Action',
       key: 'operation',
@@ -132,7 +129,7 @@ const KitEmployeeScreen = ({currentPage}) => {
               <Document />
             </Button>
           </a>
-          <Button
+          {/* <Button
             style={{
               backgroundColor: 'transparent',
               border: 'none',
@@ -151,9 +148,9 @@ const KitEmployeeScreen = ({currentPage}) => {
               }
             }}>
             <Download />
-          </Button>
+          </Button> */}
           <a
-            href={`${DEFAULT_BASE_URL}/print-barcodes/${record.id}/`}
+            href={`${DEFAULT_BASE_URL}/print-rebarcodes/${record.id}/`}
             target="_blank"
             rel="noopener noreferrer">
             <Button
@@ -180,33 +177,12 @@ const KitEmployeeScreen = ({currentPage}) => {
             }}>
             <Edit />
           </Button>
-          {/* <Popconfirm
-            title='Confirm Delete'
-            onCancel={(e) => e.stopPropagation()}
-            onConfirm={deleteHOC({
-              record,
-              reload,
-              api: deleteGRN,
-              success: 'Deleted GRN successfully',
-              failure: 'Error in deleting GRN',
-            })}>
-            <Button
-              style={{
-                backgroundColor: 'transparent',
-                boxShadow: 'none',
-                border: 'none',
-                padding: '1px',
-              }}
-              onClick={(e) => e.stopPropagation()}>
-              <Delete />
-            </Button>
-          </Popconfirm> */}
           {/* <DeleteWithPassword
             password={DEFAULT_PASSWORD}
             deleteHOC={deleteHOC({
               record,
               reload,
-              api: deleteGRN,
+              api: deleteRegGRN,
               success: 'Deleted GRN successfully',
               failure: 'Error in deleting GRN',
             })}
@@ -218,7 +194,7 @@ const KitEmployeeScreen = ({currentPage}) => {
 
   const tabs = [
     {
-      name: 'All GRNs',
+      name: 'Regenerated Barcodes',
       key: 'allGRNs',
       data: filteredData,
       columns,
@@ -239,7 +215,7 @@ const KitEmployeeScreen = ({currentPage}) => {
         refresh={reload}
         tabs={tabs}
         size="middle"
-        title="GRNs"
+        title="Regenerate Barcode"
         editingId={editingId}
         cancelEditing={cancelEditing}
         modalBody={GRNForm}

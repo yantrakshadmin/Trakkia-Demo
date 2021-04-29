@@ -761,6 +761,44 @@ export const deleteGRN = (id) =>
     secure: true,
   });
 
+export const createRegGRN = (data) =>
+  loadAPI('/create-regrn/', {
+    method: 'POST',
+    secure: true,
+    data,
+    // headers: {
+    //   'Content-Type': 'multipart/form-data  boundary=' + Math.random().toString().substr(2),
+    // },
+  });
+
+export const editRegGRN = (id, data) =>
+  loadAPI(`/edit-regrn/${id}/`, {
+    method: 'PATCH',
+    secure: true,
+    data,
+    // headers: {
+    //   'Content-Type': 'multipart/form-data  boundary=' + Math.random().toString().substr(2),
+    // },
+  });
+
+export const retrieveRegGRN = (id) =>
+  loadAPI(`/edit-regrn/${id}/`, {
+    method: 'GET',
+    secure: true,
+  });
+
+export const retrieveRegGRNs = () =>
+  loadAPI('/regrns/', {
+    method: 'GET',
+    secure: true,
+  });
+
+export const deleteRegGRN = (id) =>
+  loadAPI(`/edit-regrn/${id}/`, {
+    method: 'DELETE',
+    secure: true,
+  });
+
 export const createDelivered = (req) =>
   loadAPI('/create-delivered/', {
     method: 'POST',
@@ -1101,6 +1139,14 @@ export const deleteLead = (id) =>
 export const postAltBarcodes = (data) => {
   return loadAPI('dispatch-allotment/', {
     method: 'POST',
+    secure: true,
+    data,
+  });
+};
+
+export const patchAltBarcodes = (data, id) => {
+  return loadAPI(`/dispatch-allotment-upd/${id}/`, {
+    method: 'PATCH',
     secure: true,
     data,
   });
