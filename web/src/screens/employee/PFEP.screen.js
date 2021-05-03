@@ -80,16 +80,16 @@ const PFEPEmployeeScreen = ({currentPage}) => {
   }, [filteredData]);
 
   const columns = [
-    ...PFEPColumn.slice(0, 1),
-    // {
-    //   title: 'Created Date',
-    //   key: 'date',
-    //   dataIndex: 'date',
-    //   width: '7vw',
-    //   sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
-    //   showSorterTooltip: false,
-    //   render: (text) => <div>{utcDateFormatter(text)}</div>,
-    // },
+    ...PFEPColumn,
+    {
+      title: 'Created Date',
+      key: 'date',
+      dataIndex: 'date',
+      width: '7vw',
+      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
+      showSorterTooltip: false,
+      render: (text) => <div>{utcDateFormatter(text)}</div>,
+    },
     {
       title: 'Emitter',
       key: 'emitter',
@@ -119,24 +119,23 @@ const PFEPEmployeeScreen = ({currentPage}) => {
         ),
       showSorterTooltip: false,
     },
-    ...PFEPColumn.slice(1),
-    // {
-    //   title: 'Contact Person',
-    //   key: 'contact_person',
-    //   width: '8vw',
-    //   render: (record) => (
-    //     <div>
-    //       {record.contact_person}
-    //       <br />
-    //       {record.contact_no}
-    //       <br />
-    //       {record.email}
-    //     </div>
-    //   ),
-    //   sorter: (a, b) =>
-    //     ifNotStrReturnA(a.contact_person).localeCompare(ifNotStrReturnA(b.contact_person)),
-    //   showSorterTooltip: false,
-    // },
+    {
+      title: 'Contact Person',
+      key: 'contact_person',
+      width: '8vw',
+      render: (record) => (
+        <div>
+          {record.contact_person}
+          <br />
+          {record.contact_no}
+          <br />
+          {record.email}
+        </div>
+      ),
+      sorter: (a, b) =>
+        ifNotStrReturnA(a.contact_person).localeCompare(ifNotStrReturnA(b.contact_person)),
+      showSorterTooltip: false,
+    },
     {
       title: 'Solution Required',
       key: 'solution_required',
@@ -288,8 +287,8 @@ const PFEPEmployeeScreen = ({currentPage}) => {
               record,
               reload,
               api: deletePFEP,
-              success: 'Deleted SCS Successfully',
-              failure: 'Error in deleting SCS',
+              success: 'Deleted PFEP Successfully',
+              failure: 'Error in deleting PFEP',
             })}>
             <Button
               style={{
@@ -309,7 +308,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
 
   const tabs = [
     {
-      name: 'ALL SCS',
+      name: 'ALL PFEP',
       key: 'allPFEP',
       data: filteredData,
       columns,
@@ -396,7 +395,7 @@ const PFEPEmployeeScreen = ({currentPage}) => {
         // expandParams={{ loading }}
         scroll={{x: 1200}}
         csvdata={csvData}
-        csvname={`SCS${searchVal}.csv`}
+        csvname={`PFEP${searchVal}.csv`}
       />
     </NoPermissionAlert>
   );

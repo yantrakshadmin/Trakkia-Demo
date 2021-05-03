@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import {lazy} from 'react';
 
 export const PFEPSteps = [
   {
@@ -7,7 +7,7 @@ export const PFEPSteps = [
     component: lazy(() => import('web/src/forms/PFEP/PFEPBasicDetails.form')),
   },
   // {
-  //   title: 'PFEP Creation',
+  //   title: 'SCS Creation',
   //   icon: 'solution',
   //   component: lazy(() => import('web/src/forms/PFEP/PFEPCreation.form')),
   // },
