@@ -121,6 +121,7 @@ const ReturnDocketsScreen = ({currentPage}) => {
                 padding: '1px',
               }}
               // disabled={!record.document}
+              disabled={true}
               onClick={async (e) => {
                 e.stopPropagation();
                 const {data: req} = await loadAPI(
@@ -140,7 +141,8 @@ const ReturnDocketsScreen = ({currentPage}) => {
                 } catch (err) {}
               }}>
               <FontAwesomeIcon
-                icon={record.is_delivered ? faEye : faEyeSlash}
+                //icon={record.is_delivered ? faEye : faEyeSlash}
+                icon={faEyeSlash}
                 style={{fontSize: 20, color: yantraColors['primary']}}
               />
             </Button>
